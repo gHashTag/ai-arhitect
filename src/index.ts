@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Telegraf, Markup } from 'telegraf';
+import express from 'express';
 import { openai } from './services/openai';
 import { getAiFeedbackFromSupabase } from './services/getAiFeedbackFromOpenAI';
 
@@ -441,15 +442,21 @@ bot.catch((err, ctx) => {
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('🛑 Shutting down bot...');
+  console.log('🛑 Shutting down bot and server...');
   bot.stop('SIGINT');
-  process.exit(0);
+  server.close(() => {
+    console.log('🌐 HTTP server closed');
+    process.exit(0);
+  });
 });
 
 process.on('SIGTERM', () => {
-  console.log('🛑 Shutting down bot...');
+  console.log('🛑 Shutting down bot and server...');
   bot.stop('SIGTERM');
-  process.exit(0);
+  server.close(() => {
+    console.log('🌐 HTTP server closed');
+    process.exit(0);
+  });
 });
 
 // Функция настройки команд бота
@@ -466,6 +473,33 @@ async function setupBotCommands() {
     console.error('❌ Error setting bot commands:', error);
   }
 }
+
+// Создание HTTP сервера для healthcheck (требуется Railway)
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Health check endpoint для Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    bot: 'AI Architect Bot',
+    assistant_id: ASSISTANT_ID 
+  });
+});
+
+// Корневой endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'AI Architect Bot is running', 
+    timestamp: new Date().toISOString() 
+  });
+});
+
+// Запуск HTTP сервера
+const server = app.listen(PORT, () => {
+  console.log(`🌐 HTTP server running on port ${PORT}`);
+});
 
 // Запуск бота с проверкой Assistant
 console.log('🚀 Starting AI Architect Bot...');
