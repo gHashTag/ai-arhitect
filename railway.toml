@@ -1,0 +1,11 @@
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/health"
+restartPolicyType = "always"
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install && npm run build"
+
+[env]
+NODE_ENV = "production"
