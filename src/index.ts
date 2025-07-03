@@ -697,9 +697,17 @@ const PORT = process.env.PORT || 3000;
 
 // Статический сервер для PDF файлов
 // В production (dist) файлы будут в dist/blocks-pdf, в dev - в ../blocks-pdf
-const pdfPath = process.env.NODE_ENV === 'production' 
+const isProduction = process.env.NODE_ENV === 'production';
+const pdfPath = isProduction
   ? path.join(__dirname, 'blocks-pdf')
   : path.join(__dirname, '../blocks-pdf');
+
+console.log(`🔍 [PDF] NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`🔍 [PDF] isProduction: ${isProduction}`);
+console.log(`🔍 [PDF] __dirname: ${__dirname}`);
+console.log(`🔍 [PDF] pdfPath: ${pdfPath}`);
+console.log(`🔍 [PDF] Directory exists: ${require('fs').existsSync(pdfPath)}`);
+
 app.use('/blocks-pdf', express.static(pdfPath));
 
 // Health check endpoint для Railway
