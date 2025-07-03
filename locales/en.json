@@ -1,5 +1,6 @@
 {
-  "welcome": "Welcome, {{name}}!",
+  "welcome": "Welcome to AI Architect!",
+  "description": "I am your virtual assistant, ready to help you choose the optimal blocks for your construction project.",
   "intro": "I am your personal consultant for construction blocks and architectural solutions.",
   "capabilities": {
     "advise_props": "Advise on technical specifications",
@@ -9,16 +10,40 @@
   },
   "choose_action": "Choose an action:",
   "menu": {
-    "catalog": "Block Catalog",
-    "consult": "AI Consultation",
-    "compare": "Compare Products",
-    "filters": "Filters",
-    "faq": "FAQ"
+    "catalog": "🧱 Catalog",
+    "consult": "👨‍💼 Consultation",
+    "compare": "⚖️ Compare",
+    "filters": "🔍 Filters",
+    "faq": "❓ FAQ",
+    "help": "📚 Help"
   },
-  "catalog": {
-    "title": "Construction Blocks Catalog",
-    "select_category": "Select a product category to view:",
-    "total_products": "Total products in catalog: {{count}}"
+  "categories": {
+    "foundation": "🏗️ Foundation",
+    "wall": "🧱 Wall",
+    "special": "⚙️ Special",
+    "all": "📋 All Products",
+    "catalog": "🧱 Catalog"
+  },
+  "back_to_menu": "Back to Menu",
+  "back_to_categories": "Back to Categories",
+  "calculations": "Detailed Calculations",
+  "help": "Help",
+  "expert_consultation": "Expert Consultation",
+  "common_questions": "Frequently Asked Questions",
+  "filters_options": {
+    "foundation": "Foundation",
+    "wall": "Wall",
+    "special": "Special",
+    "concrete": "With Concrete",
+    "weight": "With Weight",
+    "all": "All Products"
+  },
+  "compare_options": {
+    "p6_20_vs_p25": "P6-20 vs P25",
+    "p6_20_vs_p6_30": "P6-20 vs P6-30",
+    "s6_vs_sm6": "S6 vs SM6",
+    "s25_vs_sp": "S25 vs SP",
+    "kl28_vs_vb2": "Columns vs Ventilation"
   },
   "consultation": {
     "title": "Expert Consultation",
@@ -32,7 +57,7 @@
     "example": "Example question: \"Need to select blocks for a strip foundation of a 10×12 m house. Which blocks would you recommend and how much concrete will be needed?\""
   },
   "pdf": {
-    "download": "Download PDF",
+    "download": "📄 Download PDF",
     "sent": "PDF document sent!",
     "not_found": "PDF file not found",
     "error": "Error sending PDF",
@@ -42,5 +67,25 @@
     "back_to_category": "Back to category",
     "back_to_menu": "Back to menu",
     "menu": "Menu"
+  },
+  "consult": "👨‍💼 Consultation",
+  "ask_question": "❓ Ask a question",
+  "catalog": {
+    "title": "Construction Blocks Catalog",
+    "select_category": "Select a product category to view:",
+    "total_products": "Total products in catalog: {{count}}"
+  },
+  "messages": {
+    "help": "📚 **AI Architect Help**\n\n🤖 **About the bot:**\nI am a specialized AI-assistant for architects and designers.\n\n💬 **How to use:**\nAsk about:\n• Technical specs of blocks\n• Choosing materials\n• Building regulations\n• Connection details\n• Quantity calculations\n\n📋 **Commands:**\n/start – main menu\n/blocks – block catalog\n/consult – expert consultation\n\n🏗️ **Examples:**\n• \"Which blocks are suitable for a foundation?\"\n• \"How much concrete is needed for block P6-20?\"\n• \"How to reinforce P6-20?\"",
+    "consult": "👨‍💼 **Expert consultation**\n\nAsk any question about construction blocks and I will give a detailed answer considering:\n\n✅ Technical specifications\n✅ Building regulations\n✅ Practical experience\n✅ Optimisation tips\n\n💡 **Example:** \"Need blocks for a 10×12 m strip foundation. Which blocks do you recommend and how much concrete is required?\"",
+    "faq": "❓ **Frequently Asked Questions**\n\n🔹 **Main use of HAUS P6-20 blocks?**\n→ They serve as permanent shuttering for monolithic concrete structures.\n\n🔹 **Must the blocks be filled with concrete?**\n→ Yes. They cannot be used empty.\n\n🔹 **Can the structure be reinforced?**\n→ Yes, reinforcement can be added if required.\n\n🔹 **How to calculate the number of blocks?**\n→ Send the foundation dimensions and I will help with calculations!",
+    "blocks_demo": "🧱 **Construction Blocks Catalog**\n\n**HAUS P6-20** – concrete formwork blocks\n📐 Size: 498×198×250 mm\n🏗️ Usage:\n• Strip foundations\n• Grillage\n• Retaining walls\n• Lintels\n\n💧 Concrete consumption: 0.015 m³ per block\n\n📄 Technical documentation available\n📞 Consultations: +370 646 08801\n\nFor more details just ask!",
+    "filters_intro": "🔍 **Catalog filters** ...",
+    "compare_intro": "⚖️ **Compare products** ...",
+    "calc_intro": "📋 **Detailed calculations** ...",
+    "error_generic": "❌ **Processing error** ...",
+    "ask_question_intro": "📡 **Ask a question**\n\nSimply type your question about construction blocks and I will answer in detail!",
+    "follow_up_prompt": "💡 I hope my answer was helpful! What would you like to do next?",
+    "unable_process": "🤔 Sorry, I couldn't process your request. Please try rephrasing your question."
   }
 }

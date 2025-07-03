@@ -1,5 +1,5 @@
 {
-  "welcome": "Sveiki atvykę į AI Architektą!",
+  "welcome": "🏗️ **Sveiki, {user}!**\n\nAš esu **AI Architect** – jūsų asmeninis konsultantas statybų blokams ir architektūriniams sprendimams.\n\n💬 **Kuo galiu padėti:**\n• Konsultuoti dėl techninių charakteristikų\n• 🧮 Padėti apskaičiuoti medžiagas\n• 📚 Atsakyti apie statybos normas\n• 💡 Pasiūlyti optimalius sprendimus\n\n👇 **Pasirinkite veiksmą:**",
   "description": "Aš esu jūsų virtualus asistentas, pasiruošęs padėti pasirinkti optimalius blokus jūsų statybos projektui.",
   "capabilities": {
     "advise_props": "Konsultuoju dėl techninių charakteristikų",
@@ -9,17 +9,19 @@
   },
   "choose_action": "Pasirinkite veiksmą:",
   "menu": {
-    "catalog": "Katalogas",
-    "consult": "Konsultacija",
-    "compare": "Palyginti",
-    "filters": "Filtrai",
-    "faq": "DUK"
+    "catalog": "🧱 Katalogas",
+    "consult": "👨‍💼 Konsultacija",
+    "compare": "⚖️ Palyginti",
+    "filters": "🔍 Filtrai",
+    "faq": "❓ DUK",
+    "help": "📚 Pagalba"
   },
   "categories": {
-    "foundation": "Pamatiniai",
-    "wall": "Sieniniai",
-    "special": "Specialūs",
-    "all": "Visi produktai"
+    "foundation": "🏗️ Pamatiniai",
+    "wall": "🧱 Sieniniai",
+    "special": "⚙️ Specialūs",
+    "all": "📋 Visi produktai",
+    "catalog": "🧱 Katalogas"
   },
   "back_to_menu": "Atgal į meniu",
   "back_to_categories": "Atgal į kategorijas",
@@ -42,11 +44,6 @@
     "s25_vs_sp": "S25 vs SP",
     "kl28_vs_vb2": "Kolonos vs Ventiliacija"
   },
-  "catalog": {
-    "title": "Statybos blokų katalogas",
-    "select_category": "Pasirinkite produktų kategoriją peržiūrai:",
-    "total_products": "Iš viso kataloge produktų: {{count}}"
-  },
   "consultation": {
     "title": "Eksperto konsultacija",
     "description": "Tiesiog parašykite savo klausimą, ir suteiksi išsamią konsultaciją, atsižvelgiant į:",
@@ -59,7 +56,7 @@
     "example": "Pavyzdys: \"Reikia pasirinkti blokus juostiniam pamatui 10×12 m namui. Kokius blokus patartumėte ir kiek reikės betono?\""
   },
   "pdf": {
-    "download": "Atsisiųsti PDF",
+    "download": "📄 Atsisiųsti PDF",
     "sent": "PDF dokumentas išsiųstas!",
     "not_found": "PDF failas nerastas",
     "error": "Klaida siunčiant PDF",
@@ -69,5 +66,37 @@
     "back_to_category": "Atgal į kategoriją",
     "back_to_menu": "Grįžti į meniu",
     "menu": "Meniu"
+  },
+  "consult": "👨‍💼 Konsultacija",
+  "ask_question": "❓ Užduoti klausimą",
+  "catalog": {
+    "title": "Statybos blokų katalogas",
+    "select_category": "Pasirinkite produktų kategoriją peržiūrai:",
+    "total_products": "Iš viso kataloge produktų: {{count}}"
+  },
+  "messages": {
+    "help": "📚 **AI Architekto pagalba**\n\n🤖 **Apie botą:**\nAš esu specializuotas AI konsultantas architektams ir projektuotojams.\n\n💬 **Kaip naudotis:**\nTiesiog užduokite klausimą apie:\n• Blokų technines charakteristikas\n• Medžiagų pasirinkimą\n• Statybos normas\n• Mazgų sprendimus\n• Medžiagų kiekių skaičiavimą\n\n📋 **Komandos:**\n/start – pagrindinis meniu\n/blocks – blokų katalogas\n/consult – eksperto konsultacija\n\n🏗️ **Pavyzdžiai:**\n• \"Kokie blokai tinka pamatams?\"\n• \"Kiek betono reikia P6-20 blokui?\"\n• \"Kaip armuoti P6-20 bloką?\"",
+    "consult": "👨‍💼 **Eksperto konsultacija**\n\nUžduokite bet kokį klausimą apie statybinius blokus, ir pateiksiu išsamią konsultaciją atsižvelgdamas į:\n\n✅ Technines charakteristikas\n✅ Statybos normas\n✅ Praktinio taikymo patirtį\n✅ Optimizavimo rekomendacijas\n\n💡 **Pavyzdys:** \"Reikia pasirinkti blokus 10×12 m namo juostiniam pamatui. Kokius blokus siūlote ir kiek reikės betono?\"",
+    "faq": "❓ **Dažniausi klausimai**\n\n🔹 **Kokia pagrindinė HAUS P6-20 blokų paskirtis?**\n→ Jie naudojami kaip neardoma betono klojinio sistema monolitinėms konstrukcijoms\n\n🔹 **Ar būtina užpildyti blokus betonu?**\n→ Taip, blokų negalima naudoti neužpildžius betonu\n\n🔹 **Ar galima armuoti konstrukciją?**\n→ Taip, esant poreikiui galima įdėti armatūrą\n\n🔹 **Kaip apskaičiuoti blokų kiekį?**\n→ Parašykite pamato matmenis ir padėsiu su skaičiavimu!",
+    "blocks_demo": "🧱 **Statybos blokų katalogas**\n\n**HAUS P6-20** – betono klojinių blokai\n📐 Matmenys: 498×198×250 mm\n🏗️ Paskirtis:\n• Juostiniams pamatams\n• Rostverkams\n• Atraminėms sienoms\n• Perdangoms\n\n💧 Betono sunaudojimas: 0.015 m³ blokui\n\n📄 Techninė dokumentacija prieinama\n📞 Konsultacijos: +370 646 08801\n\nIšsamesnei informacijai tiesiog paklauskite!",
+    "filters_intro": "🔍 **Katalogo filtrai**\n\nPasirinkite filtravimo kriterijų:\n\n🏷️ **Pagal kategorijas:**\n• 🏗️ Pamatiniai blokai\n• 🧱 Sieniniai blokai\n• ⚙️ Specialūs blokai\n\n🏷️ **Pagal panaudojimą:**\n• Pamatai\n• Sienos\n• Kolonos\n• Ventiliacija",
+    "compare_intro": "⚖️ **Produktų palyginimas**\n\nPasirinkite kategoriją palyginimui:\n\n💡 **Populiarūs palyginimai:**\n• P6-20 vs P25 (pamatiniai)\n• S6 vs SM6 (sieniniai)\n• S25 vs SP (sienų storis)\n\n🤖 **Arba parašykite:** \"Palygink P6-20 ir P25\" arba bet kurią kitą porą",
+    "calc_intro": "📋 **Išsamūs skaičiavimai**\n\n📦 **Pagrindiniai HAUS P6-20 parametrai:**\n\n📐 **Matmenys:**\n• P6-20 (M): 498×198×250 mm\n• P6-20 (K): 508×198×250 mm\n\n💧 **Betono sąnaudos:**\n• Vienam blokui: 0.015 m³\n• 1 m juostai (25 cm aukščio): 0.03 m³\n• 1 m³ sienos: 0.6 m³",
+    "error_generic": "❌ **Apdorojimo klaida**\n\n😔 Atsiprašome, įvyko techninė klaida.\n\n🔄 **Ką daryti:**\n• Bandykite dar kartą\n• Pakeiskite klausimą\n• Naudokite meniu",
+    "ask_question_intro": "📡 **Užduoti klausimą**\n\nTiesiog parašykite savo klausimą apie statybinius blokus, ir aš pateiksiu išsamų atsakymą!",
+    "follow_up_prompt": "💡 Tikiuosi, mano atsakymas buvo naudingas! Ką norėtumėte daryti toliau?",
+    "unable_process": "🤔 Atsiprašome, nepavyko apdoroti jūsų užklausos. Pabandykite perfrazuoti klausimą.",
+    "filter_title": {
+      "foundation": "🏗️ Pamatiniai blokai",
+      "wall": "🧱 Sieniniai blokai",
+      "special": "⚙️ Specialūs blokai",
+      "concrete": "💧 Blokai su betonu",
+      "weight": "⚖️ Blokai su svoriu"
+    },
+    "filter_results": "🔍 **{title}**\n\nRasta prekių: {count}\n\n",
+    "compare_not_found": "Nepavyko rasti prekių palyginimui",
+    "pdf_intro": "📄 **Techninė dokumentacija {name}**\n\n🔗 **Atsisiųsti PDF dokumentaciją:**\n[📋 {name}.pdf]({link})\n\n📋 **Dokumentacijoje:**\n• Techninės charakteristikos\n• Naudojimo instrukcijos\n• Montažo schemos\n• Medžiagų skaičiavimai\n\n💡 Spauskite nuorodą aukščiau, kad atsisiųstumėte failą.",
+    "pdf_sent": "📄 PDF nuoroda išsiųsta!",
+    "pdf_unavailable": "❌ PDF šiam produktui neprieinamas"
   }
 }
