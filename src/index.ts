@@ -483,7 +483,11 @@ ${Object.entries(CATEGORIES).map(([key, category]) =>
           if (product && product.pdfLink) {
             // Отправляем документ пользователю
             try {
-              const pdfPath = path.join(__dirname, '..', product.pdfLink);
+              // Убираем /blocks-pdf/ из пути, так как product.pdfLink уже содержит полный путь
+              const pdfFileName = product.pdfLink.replace('/blocks-pdf/', '');
+              const pdfPath = path.join(__dirname, '..', 'blocks-pdf', pdfFileName);
+              
+              console.log(`[PDF] Attempting to send: ${pdfPath}`);
               
               // Проверяем существование файла
               const fs = require('fs');
@@ -498,6 +502,7 @@ ${Object.entries(CATEGORIES).map(([key, category]) =>
                 
                 await ctx.answerCbQuery('📄 PDF документ отправлен!');
               } else {
+                console.error(`[PDF] File not found: ${pdfPath}`);
                 await ctx.answerCbQuery('❌ PDF файл не найден');
               }
             } catch (error) {
