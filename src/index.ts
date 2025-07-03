@@ -61,13 +61,14 @@ initI18n().then(() => {
 bot.start(async (ctx) => {
   const userName = ctx.from?.first_name || 'User';
   const lang = ctx.session?.language || 'lt';
-  const welcomeMessage = `🏗️ ${t(lang, 'welcome', { name: userName })}\n\n${t(lang, 'intro')}\n\n🧠 **${t(lang, 'capabilities.advise_props')}\n• ${t(lang, 'capabilities.material_calc')}\n• ${t(lang, 'capabilities.standards_info')}\n• ${t(lang, 'capabilities.suggest_solutions')}**\n\n${t(lang, 'choose_action')}`;
+  
+  const welcomeMessage = `🏗️ **${t(lang, 'welcome', { name: userName })}**\n\n${t(lang, 'intro')}\n\n${t(lang, 'capabilities.advise_props')}\n• ${t(lang, 'capabilities.material_calc')}\n• ${t(lang, 'capabilities.standards_info')}\n• ${t(lang, 'capabilities.suggest_solutions')}\n\n${t(lang, 'choose_action')}`;
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(t(lang, 'menu.catalog'), 'catalog')],
-    [Markup.button.callback(t(lang, 'menu.consult'), 'consult')],
-    [Markup.button.callback(t(lang, 'menu.compare'), 'compare_start')],
-    [Markup.button.callback(t(lang, 'menu.filters'), 'filters'), Markup.button.callback(t(lang, 'menu.faq'), 'faq')]
+    [Markup.button.callback(`🧱 ${t(lang, 'menu.catalog')}`, 'catalog')],
+    [Markup.button.callback(`🤖 ${t(lang, 'menu.consult')}`, 'consult')],
+    [Markup.button.callback(`📊 ${t(lang, 'menu.compare')}`, 'compare_start')],
+    [Markup.button.callback(`🔍 ${t(lang, 'menu.filters')}`, 'filters'), Markup.button.callback(`❓ ${t(lang, 'menu.faq')}`, 'faq')]
   ]);
 
   await ctx.reply(welcomeMessage, {

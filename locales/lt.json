@@ -1,6 +1,6 @@
 {
-  "welcome": "Sveiki atvykę, {{name}}!",
-  "intro": "Aš esu AI-architektas — jūsų asmeninis konsultantas statybinių blokų ir architektūros sprendimų klausimais.",
+  "welcome": "Sveiki atvykę į AI Architektą!",
+  "description": "Aš esu jūsų virtualus asistentas, pasiruošęs padėti pasirinkti optimalius blokus jūsų statybos projektui.",
   "capabilities": {
     "advise_props": "Konsultuoju dėl techninių charakteristikų",
     "material_calc": "Padedantis apskaičiuoti medžiagų kiekį",
@@ -9,11 +9,38 @@
   },
   "choose_action": "Pasirinkite veiksmą:",
   "menu": {
-    "catalog": "Blokų katalogas",
-    "consult": "AI Konsultacija",
-    "compare": "Palyginti produktus",
+    "catalog": "Katalogas",
+    "consult": "Konsultacija",
+    "compare": "Palyginti",
     "filters": "Filtrai",
     "faq": "DUK"
+  },
+  "categories": {
+    "foundation": "Pamatiniai",
+    "wall": "Sieniniai",
+    "special": "Specialūs",
+    "all": "Visi produktai"
+  },
+  "back_to_menu": "Atgal į meniu",
+  "back_to_categories": "Atgal į kategorijas",
+  "calculations": "Išsamūs skaičiavimai",
+  "help": "Pagalba",
+  "expert_consultation": "Eksperto konsultacija",
+  "common_questions": "Dažniausi klausimai",
+  "filters_options": {
+    "foundation": "Pamatiniai",
+    "wall": "Sieniniai",
+    "special": "Specialūs",
+    "concrete": "Su betonu",
+    "weight": "Su svoriu",
+    "all": "Visi produktai"
+  },
+  "compare_options": {
+    "p6_20_vs_p25": "P6-20 vs P25",
+    "p6_20_vs_p6_30": "P6-20 vs P6-30",
+    "s6_vs_sm6": "S6 vs SM6",
+    "s25_vs_sp": "S25 vs SP",
+    "kl28_vs_vb2": "Kolonos vs Ventiliacija"
   },
   "catalog": {
     "title": "Statybos blokų katalogas",
