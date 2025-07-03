@@ -1,5 +1,5 @@
 {
-  "welcome": "🏗️ **Welcome, {user}!**\n\nI am **AI Architect** – your personal assistant for construction blocks and architectural solutions.\n\n💬 **I can:**\n• Advise on technical specifications\n• 🧮 Help calculate materials\n• 📚 Answer building codes\n• 💡 Offer optimal solutions\n\n👇 **Choose an action:**",
+  "welcome": "🏗️ **Welcome, {{user}}!**\n\nI am **AI Architect** – your personal assistant for construction blocks and architectural solutions.\n\n💬 **I can:**\n• Advise on technical specifications\n• 🧮 Help calculate materials\n• 📚 Answer building codes\n• 💡 Offer optimal solutions\n\n👇 **Choose an action:**",
   "description": "I am your virtual assistant, ready to help you choose the optimal blocks for your construction project.",
   "intro": "I am your personal consultant for construction blocks and architectural solutions.",
   "capabilities": {
@@ -73,7 +73,8 @@
   "catalog": {
     "title": "Construction Blocks Catalog",
     "select_category": "Select a product category to view:",
-    "total_products": "Total products in catalog: {{count}}"
+    "total_products": "Total products in catalog: {{count}}",
+    "all_products_title": "Full catalog"
   },
   "messages": {
     "help": "📚 **AI Architect Help**\n\n🤖 **About the bot:**\nI am a specialized AI-assistant for architects and designers.\n\n💬 **How to use:**\nAsk about:\n• Technical specs of blocks\n• Choosing materials\n• Building regulations\n• Connection details\n• Quantity calculations\n\n📋 **Commands:**\n/start – main menu\n/blocks – block catalog\n/consult – expert consultation\n\n🏗️ **Examples:**\n• \"Which blocks are suitable for a foundation?\"\n• \"How much concrete is needed for block P6-20?\"\n• \"How to reinforce P6-20?\"",
@@ -87,6 +88,10 @@
     "ask_question_intro": "📡 **Ask a question**\n\nSimply type your question about construction blocks and I will answer in detail!",
     "follow_up_prompt": "💡 I hope my answer was helpful! What would you like to do next?",
     "unable_process": "🤔 Sorry, I couldn't process your request. Please try rephrasing your question.",
+    "processing": "🤖 Analyzing your question...",
+    "category": {
+      "products_count": "Products in category ({{count}}):"
+    },
     "pdf_sent": "📄 PDF link sent!",
     "pdf_unavailable": "❌ PDF not available for this product",
     "colleague_fallback": "Colleague",
@@ -102,6 +107,22 @@
     },
     "filter_results": "🔍 **{title}**\n\nFound items: {count}\n\n",
     "pdf_intro": "📄 **Technical documentation {name}**\n\n🔗 **Download PDF documentation:**\n[📋 {name}.pdf]({link})\n\n📋 **In the document:**\n• Technical specifications\n• Usage instructions\n• Mounting schemes\n• Material calculations\n\n💡 Click the link above to download.",
-    "compare_not_found": "Could not find products to compare"
+    "compare_not_found": "Could not find products to compare",
+    "product_sections": {
+      "tech_specs": "📐 **Technical specifications:**",
+      "usage": "🔧 **Usage:**",
+      "features": "⭐ **Features:**",
+      "docs": "📄 **Documentation:**",
+      "no_data": "n/a"
+    },
+    "compare": {
+      "need_two": "You need at least 2 products to compare",
+      "title": "📊 **Product comparison**",
+      "hint": "Write me: \"Help me choose between {names}\"",
+      "recommend_foundation": "• For foundations choose blocks with maximum strength",
+      "recommend_wall": "• For walls consider thermal insulation",
+      "characteristic": "Characteristic",
+      "category": "🏷️ Category"
+    }
   }
 }

@@ -72,7 +72,8 @@ initI18n()
         t(ctx.session?.language || "lt", "messages.colleague_fallback");
       const lang = ctx.session?.language || "lt";
 
-      const welcomeMessage = `🏗️ **${t(lang, "welcome", { name: userName })}**\n\n${t(lang, "intro")}\n\n${t(lang, "capabilities.advise_props")}\n• ${t(lang, "capabilities.material_calc")}\n• ${t(lang, "capabilities.standards_info")}\n• ${t(lang, "capabilities.suggest_solutions")}\n\n${t(lang, "choose_action")}`;
+      // Полностью локализованное приветственное сообщение формируется одной строкой из файлов перевода
+      const welcomeMessage = t(lang, "welcome", { user: userName });
 
       const keyboard = Markup.inlineKeyboard([
         [Markup.button.callback(t(lang, "menu.catalog"), "catalog")],
@@ -121,18 +122,16 @@ initI18n()
 
         switch (callbackData) {
           case "catalog":
-            const catalogMessage = `🧱 **Каталог строительных блоков**
-
-Выберите категорию товаров для просмотра:
-
-${Object.entries(CATEGORIES)
-  .map(
-    ([key, category]) =>
-      `${category.icon} **${category.name}**\n${category.description}`
-  )
-  .join("\n\n")}
-
-📊 **Всего товаров в каталоге:** ${PRODUCTS.length}`;
+            const catalogMessage = `🧱 **${t(lang, "catalog.title")}**\n\n${t(lang, "catalog.select_category")}\n\n${Object.entries(
+              CATEGORIES
+            )
+              .map(
+                ([_, category]) =>
+                  `${category.icon} **${category.name}**\n${category.description}`
+              )
+              .join("\n\n")}\n\n📊 **${t(lang, "catalog.total_products", {
+              count: PRODUCTS.length,
+            })}**`;
 
             const catalogKeyboard = Markup.inlineKeyboard([
               [
@@ -240,7 +239,13 @@ ${Object.entries(CATEGORIES)
             const categoryInfo =
               CATEGORIES[category as keyof typeof CATEGORIES];
 
-            let categoryMessage = `${categoryInfo.icon} **${categoryInfo.name}**\n\n${categoryInfo.description}\n\n📦 **Товары в категории (${categoryProducts.length}):**\n\n`;
+            let categoryMessage = `${categoryInfo.icon} **${categoryInfo.name}**\n\n${categoryInfo.description}\n\n📦 **${t(
+              lang,
+              "messages.category.products_count",
+              {
+                count: categoryProducts.length,
+              }
+            )}**\n\n`;
 
             categoryProducts.forEach((product, index) => {
               categoryMessage += `${index + 1}. **${product.name}**\n   📐 ${product.dimensions}\n   ${product.description}\n\n`;
@@ -270,7 +275,13 @@ ${Object.entries(CATEGORIES)
             break;
 
           case "all_products":
-            let allProductsMessage = `📋 **Весь каталог товаров**\n\nВсего товаров: ${PRODUCTS.length}\n\n`;
+            let allProductsMessage = `📋 **${t(lang, "catalog.all_products_title")}**\n\n${t(
+              lang,
+              "catalog.total_products",
+              {
+                count: PRODUCTS.length,
+              }
+            )}\n\n`;
 
             Object.entries(CATEGORIES).forEach(([key, categoryInfo]) => {
               const categoryProducts = getProductsByCategory(key);
@@ -529,7 +540,12 @@ ${Object.entries(CATEGORIES)
                 await ctx.reply(pdfMessage, {
                   parse_mode: "Markdown",
                   ...Markup.inlineKeyboard([
-                    [Markup.button.url("🔗 Открыть PDF", product.pdfLink)],
+                    [
+                      Markup.button.url(
+                        t(lang, "pdf.download"),
+                        product.pdfLink
+                      ),
+                    ],
                     [Markup.button.callback(t(lang, "consult"), "consult")],
                     [
                       Markup.button.callback(
@@ -628,7 +644,7 @@ ${Object.entries(CATEGORIES)
         );
 
         // Отправляем сообщение о прогрессе
-        progressMessage = await ctx.reply("🤖 Анализирую ваш вопрос...", {
+        progressMessage = await ctx.reply(t(lang, "messages.processing"), {
           reply_parameters: { message_id: ctx.message.message_id },
         });
 

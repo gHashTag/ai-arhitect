@@ -1,5 +1,5 @@
 {
-  "welcome": "🏗️ **Sveiki, {user}!**\n\nAš esu **AI Architect** – jūsų asmeninis konsultantas statybų blokams ir architektūriniams sprendimams.\n\n💬 **Kuo galiu padėti:**\n• Konsultuoti dėl techninių charakteristikų\n• 🧮 Padėti apskaičiuoti medžiagas\n• 📚 Atsakyti apie statybos normas\n• 💡 Pasiūlyti optimalius sprendimus\n\n👇 **Pasirinkite veiksmą:**",
+  "welcome": "🏗️ **Sveiki, {{user}}!**\n\nAš esu **AI Architect** – jūsų asmeninis konsultantas statybų blokams ir architektūriniams sprendimams.\n\n💬 **Kuo galiu padėti:**\n• Konsultuoti dėl techninių charakteristikų\n• 🧮 Padėti apskaičiuoti medžiagas\n• 📚 Atsakyti apie statybos normas\n• 💡 Pasiūlyti optimalius sprendimus\n\n👇 **Pasirinkite veiksmą:**",
   "description": "Aš esu jūsų virtualus asistentas, pasiruošęs padėti pasirinkti optimalius blokus jūsų statybos projektui.",
   "capabilities": {
     "advise_props": "Konsultuoju dėl techninių charakteristikų",
@@ -72,7 +72,8 @@
   "catalog": {
     "title": "Statybos blokų katalogas",
     "select_category": "Pasirinkite produktų kategoriją peržiūrai:",
-    "total_products": "Iš viso kataloge produktų: {{count}}"
+    "total_products": "Iš viso kataloge produktų: {{count}}",
+    "all_products_title": "Visas katalogas"
   },
   "messages": {
     "help": "📚 **AI Architekto pagalba**\n\n🤖 **Apie botą:**\nAš esu specializuotas AI konsultantas architektams ir projektuotojams.\n\n💬 **Kaip naudotis:**\nTiesiog užduokite klausimą apie:\n• Blokų technines charakteristikas\n• Medžiagų pasirinkimą\n• Statybos normas\n• Mazgų sprendimus\n• Medžiagų kiekių skaičiavimą\n\n📋 **Komandos:**\n/start – pagrindinis meniu\n/blocks – blokų katalogas\n/consult – eksperto konsultacija\n\n🏗️ **Pavyzdžiai:**\n• \"Kokie blokai tinka pamatams?\"\n• \"Kiek betono reikia P6-20 blokui?\"\n• \"Kaip armuoti P6-20 bloką?\"",
@@ -86,6 +87,7 @@
     "ask_question_intro": "📡 **Užduoti klausimą**\n\nTiesiog parašykite savo klausimą apie statybinius blokus, ir aš pateiksiu išsamų atsakymą!",
     "follow_up_prompt": "💡 Tikiuosi, mano atsakymas buvo naudingas! Ką norėtumėte daryti toliau?",
     "unable_process": "🤔 Atsiprašome, nepavyko apdoroti jūsų užklausos. Pabandykite perfrazuoti klausimą.",
+    "processing": "🤖 Analizuoju jūsų klausimą...",
     "filter_title": {
       "foundation": "🏗️ Pamatiniai blokai",
       "wall": "🧱 Sieniniai blokai",
@@ -97,6 +99,26 @@
     "compare_not_found": "Nepavyko rasti prekių palyginimui",
     "pdf_intro": "📄 **Techninė dokumentacija {name}**\n\n🔗 **Atsisiųsti PDF dokumentaciją:**\n[📋 {name}.pdf]({link})\n\n📋 **Dokumentacijoje:**\n• Techninės charakteristikos\n• Naudojimo instrukcijos\n• Montažo schemos\n• Medžiagų skaičiavimai\n\n💡 Spauskite nuorodą aukščiau, kad atsisiųstumėte failą.",
     "pdf_sent": "📄 PDF nuoroda išsiųsta!",
-    "pdf_unavailable": "❌ PDF šiam produktui neprieinamas"
+    "pdf_unavailable": "❌ PDF šiam produktui neprieinamas",
+    "colleague_fallback": "Kolega",
+    "item_not_found": "Prekė nerasta",
+    "unknown_command": "Nežinoma komanda",
+    "generic_error": "Įvyko klaida",
+    "product_sections": {
+      "tech_specs": "📐 **Techninės charakteristikos:**",
+      "usage": "🔧 **Panaudojimas:**",
+      "features": "⭐ **Ypatumai:**",
+      "docs": "📄 **Dokumentacija:**",
+      "no_data": "n/d"
+    },
+    "compare": {
+      "need_two": "Norint palyginti reikia bent 2 produktų",
+      "title": "📊 **Produktų palyginimas**",
+      "hint": "Parašykite man: \"Padėk pasirinkti tarp {names}\"",
+      "recommend_foundation": "• Pamatams rinkitės didžiausio stiprumo blokus",
+      "recommend_wall": "• Sienoms atsižvelkite į termoizoliacines savybes",
+      "characteristic": "Charakteristika",
+      "category": "🏷️ Kategorija"
+    }
   }
 }
