@@ -1,0 +1,46 @@
+{
+  "welcome": "Welcome, {{name}}!",
+  "intro": "I am your personal consultant for construction blocks and architectural solutions.",
+  "capabilities": {
+    "advise_props": "Advise on technical specifications",
+    "material_calc": "Help with material calculations",
+    "standards_info": "Answer questions about building standards",
+    "suggest_solutions": "Suggest optimal solutions"
+  },
+  "choose_action": "Choose an action:",
+  "menu": {
+    "catalog": "Block Catalog",
+    "consult": "AI Consultation",
+    "compare": "Compare Products",
+    "filters": "Filters",
+    "faq": "FAQ"
+  },
+  "catalog": {
+    "title": "Construction Blocks Catalog",
+    "select_category": "Select a product category to view:",
+    "total_products": "Total products in catalog: {{count}}"
+  },
+  "consultation": {
+    "title": "Expert Consultation",
+    "description": "Simply write your question, and I will provide a detailed consultation considering:",
+    "considerations": {
+      "tech_specs": "Technical specifications",
+      "standards": "Building norms and standards",
+      "experience": "Practical application experience",
+      "optimization": "Optimization recommendations"
+    },
+    "example": "Example question: \"Need to select blocks for a strip foundation of a 10×12 m house. Which blocks would you recommend and how much concrete will be needed?\""
+  },
+  "pdf": {
+    "download": "Download PDF",
+    "sent": "PDF document sent!",
+    "not_found": "PDF file not found",
+    "error": "Error sending PDF",
+    "not_available": "PDF not available for this product"
+  },
+  "navigation": {
+    "back_to_category": "Back to category",
+    "back_to_menu": "Back to menu",
+    "menu": "Menu"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "welcome": "Sveiki atvykę, {{name}}!",
+  "intro": "Aš esu AI-architektas — jūsų asmeninis konsultantas statybinių blokų ir architektūros sprendimų klausimais.",
+  "capabilities": {
+    "advise_props": "Konsultuoju dėl techninių charakteristikų",
+    "material_calc": "Padedantis apskaičiuoti medžiagų kiekį",
+    "standards_info": "Atsakau į klausimus apie statybos standartus",
+    "suggest_solutions": "Pasiūlau optimalius sprendimus"
+  },
+  "choose_action": "Pasirinkite veiksmą:",
+  "menu": {
+    "catalog": "Blokų katalogas",
+    "consult": "AI Konsultacija",
+    "compare": "Palyginti produktus",
+    "filters": "Filtrai",
+    "faq": "DUK"
+  },
+  "catalog": {
+    "title": "Statybos blokų katalogas",
+    "select_category": "Pasirinkite produktų kategoriją peržiūrai:",
+    "total_products": "Iš viso kataloge produktų: {{count}}"
+  },
+  "consultation": {
+    "title": "Eksperto konsultacija",
+    "description": "Tiesiog parašykite savo klausimą, ir suteiksi išsamią konsultaciją, atsižvelgiant į:",
+    "considerations": {
+      "tech_specs": "Technines charakteristikas",
+      "standards": "Statybos normas ir standartus",
+      "experience": "Praktinio taikymo patirtį",
+      "optimization": "Optimizavimo rekomendacijas"
+    },
+    "example": "Pavyzdys: \"Reikia pasirinkti blokus juostiniam pamatui 10×12 m namui. Kokius blokus patartumėte ir kiek reikės betono?\""
+  },
+  "pdf": {
+    "download": "Atsisiųsti PDF",
+    "sent": "PDF dokumentas išsiųstas!",
+    "not_found": "PDF failas nerastas",
+    "error": "Klaida siunčiant PDF",
+    "not_available": "PDF neprieinamas šiam produktui"
+  },
+  "navigation": {
+    "back_to_category": "Atgal į kategoriją",
+    "back_to_menu": "Grįžti į meniu",
+    "menu": "Meniu"
+  }
+}

@@ -3,6 +3,7 @@ import { Telegraf, Markup } from 'telegraf';
 import express from 'express';
 import path from 'path';
 import { openai } from './services/openai';
+import { initI18n, determineLanguage, t } from './services/i18n';
 import { getAiFeedbackFromSupabase } from './services/getAiFeedbackFromOpenAI';
 import { PRODUCTS, CATEGORIES, getProductsByCategory, getProductById, formatProductCard, compareProducts, filterProducts } from './services/catalog';
 
@@ -38,39 +39,35 @@ async function checkAssistantAvailability(): Promise<boolean> {
   }
 }
 
+// Middleware для выбора языка
+bot.use((ctx, next) => {
+  const userLanguageCode = ctx.from?.language_code;
+  if (!ctx.session) {
+    ctx.session = { language: 'lt' };
+  }
+  ctx.session.language = determineLanguage(userLanguageCode);
+  return next();
+});
+
 // Middleware для логирования
 bot.use((ctx, next) => {
   console.log(`[${new Date().toISOString()}] Update:`, ctx.update);
   return next();
 });
 
+initI18n().then(() => {
+
 // Команда /start
 bot.start(async (ctx) => {
-  const userName = ctx.from?.first_name || 'Коллега';
-  const welcomeMessage = `🏗️ **Добро пожаловать, ${userName}!**
-
-Я **ИИ-Архитектор** — ваш персональный AI-агент и консультант по строительным блокам! 🤖
-
-✨ **Я ЖИВОЙ ИИ-АССИСТЕНТ!** Просто пишите мне сообщения как обычному человеку:
-• 💬 "Какие блоки лучше для дома?"
-• 💬 "Рассчитай количество блоков для бани 6×8м"
-• 💬 "Можно ли P6-20 использовать в подвале?"
-• 💬 "Что лучше - P6-20 или P25?"
-
-🧠 **Мои AI-способности:**
-• 📐 Консультирую по техническим характеристикам
-• 🧮 Помогаю с расчетами материалов
-• 📚 Отвечаю на вопросы по строительным нормам
-• 💡 Предлагаю оптимальные решения
-• ⚡ Анализирую документацию из Vector Store
-
-👇 **Выберите действие или просто напишите вопрос:**`;
+  const userName = ctx.from?.first_name || 'User';
+  const lang = ctx.session?.language || 'lt';
+  const welcomeMessage = `🏗️ ${t(lang, 'welcome', { name: userName })}\n\n${t(lang, 'intro')}\n\n🧠 **${t(lang, 'capabilities.advise_props')}\n• ${t(lang, 'capabilities.material_calc')}\n• ${t(lang, 'capabilities.standards_info')}\n• ${t(lang, 'capabilities.suggest_solutions')}**\n\n${t(lang, 'choose_action')}`;
 
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('🧱 Каталог блоков', 'catalog')],
-    [Markup.button.callback('🤖 AI-Консультация', 'consult')],
-    [Markup.button.callback('⚖️ Сравнить товары', 'compare_start')],
-    [Markup.button.callback('🔍 Фильтры', 'filters'), Markup.button.callback('❓ FAQ', 'faq')]
+    [Markup.button.callback(t(lang, 'menu.catalog'), 'catalog')],
+    [Markup.button.callback(t(lang, 'menu.consult'), 'consult')],
+    [Markup.button.callback(t(lang, 'menu.compare'), 'compare_start')],
+    [Markup.button.callback(t(lang, 'menu.filters'), 'filters'), Markup.button.callback(t(lang, 'menu.faq'), 'faq')]
   ]);
 
   await ctx.reply(welcomeMessage, {
@@ -740,5 +737,10 @@ checkAssistantAvailability()
     console.error('❌ Failed to start bot:', error);
     process.exit(1);
   });
+
+}).catch((error) => {
+  console.error('Failed to initialize i18n:', error);
+  process.exit(1);
+});
 
 export default bot;
