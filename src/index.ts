@@ -481,37 +481,18 @@ ${Object.entries(CATEGORIES).map(([key, category]) =>
           const product = getProductById(productId);
           
           if (product && product.pdfLink) {
-            // Отправляем документ пользователю
-            try {
-              // Убираем /blocks-pdf/ из пути, так как product.pdfLink уже содержит полный путь
-              const pdfFileName = product.pdfLink.replace('/blocks-pdf/', '');
-              const pdfBasePath = process.env.NODE_ENV === 'production' 
-                ? path.join(__dirname, 'blocks-pdf')
-                : path.join(__dirname, '..', 'blocks-pdf');
-              const pdfPath = path.join(pdfBasePath, pdfFileName);
-              
-              console.log(`[PDF] Attempting to send: ${pdfPath}`);
-              
-              // Проверяем существование файла
-              const fs = require('fs');
-              if (fs.existsSync(pdfPath)) {
-                await ctx.replyWithDocument({
-                  source: pdfPath,
-                  filename: `${product.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
-                }, {
-                  caption: `📄 **${product.name}**\n\nТехническая документация и инструкции по применению.`,
-                  parse_mode: 'Markdown'
-                });
-                
-                await ctx.answerCbQuery('📄 PDF документ отправлен!');
-              } else {
-                console.error(`[PDF] File not found: ${pdfPath}`);
-                await ctx.answerCbQuery('❌ PDF файл не найден');
-              }
-            } catch (error) {
-              console.error('Error sending PDF:', error);
-              await ctx.answerCbQuery('❌ Ошибка при отправке PDF');
-            }
+            // Временное решение: уведомляем о доступности PDF
+            const pdfMessage = `📄 **Техническая документация ${product.name}**\n\n🔗 **Как получить PDF:**\n• Напишите в чат: "Нужен PDF для ${product.name}"\n• Или обратитесь напрямую: +37064608801\n\n📋 **В документации:**\n• Технические характеристики\n• Инструкции по применению\n• Схемы монтажа\n• Расчеты материалов\n\n💡 Файл будет отправлен персонально в течение нескольких минут.`;
+            
+            await ctx.reply(pdfMessage, {
+              parse_mode: 'Markdown',
+              ...Markup.inlineKeyboard([
+                [Markup.button.callback('📞 Связаться напрямую', 'consult')],
+                [Markup.button.callback('⬅️ Назад к товару', `product_${productId}`)]
+              ])
+            });
+            
+            await ctx.answerCbQuery('📄 Информация о получении PDF отправлена!');
           } else {
             await ctx.answerCbQuery('❌ PDF не доступен для этого товара');
           }

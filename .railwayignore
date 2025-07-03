@@ -1,0 +1,9 @@
+# Временно исключаем PDF файлы из деплоя (47MB слишком много)
+blocks-pdf/
+# Исключаем dev файлы
+node_modules/
+.env
+.env.local
+*.log
+dist/
+.DS_Store
