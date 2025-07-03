@@ -1,5 +1,5 @@
 {
-  "welcome": "🏗️ **Sveiki, {{user}}!**\n\nAš esu **AI Architect** – jūsų asmeninis konsultantas statybų blokams ir architektūriniams sprendimams.\n\n💬 **Kuo galiu padėti:**\n• Konsultuoti dėl techninių charakteristikų\n• 🧮 Padėti apskaičiuoti medžiagas\n• 📚 Atsakyti apie statybos normas\n• 💡 Pasiūlyti optimalius sprendimus\n\n👇 **Pasirinkite veiksmą:**",
+  "welcome": "🏗️ **Sveiki, {{user}}! Sveiki atvykę!**\n\n🤖 Aš esu **AI Architect** — jūsų **protingas padėjėjas** statybos blokų srityje! Su manimi galite kalbėtis kaip su gyvuoju konsultantu.\n\n💬 **Tiesiog parašykite man:**\n• \"Kokius blokus pasirinkti pamatui?\"\n• \"Kiek betono reikia namui 10×12?\"\n• \"Palygink P6-20 ir P25\"\n• \"Parodyk visus sienų blokus\"\n\n✨ **Arba naudokite mygtukus žemiau** ⬇️\n\n🎯 **Atsakysiu į bet kokį klausimą per sekundes!**",
   "description": "Aš esu jūsų virtualus asistentas, pasiruošęs padėti pasirinkti optimalius blokus jūsų statybos projektui.",
   "capabilities": {
     "advise_props": "Konsultuoju dėl techninių charakteristikų",

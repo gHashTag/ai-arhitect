@@ -1,5 +1,5 @@
 {
-  "welcome": "🏗️ **Welcome, {{user}}!**\n\nI am **AI Architect** – your personal assistant for construction blocks and architectural solutions.\n\n💬 **I can:**\n• Advise on technical specifications\n• 🧮 Help calculate materials\n• 📚 Answer building codes\n• 💡 Offer optimal solutions\n\n👇 **Choose an action:**",
+  "welcome": "🏗️ **Hi {{user}}! Welcome!**\n\n🤖 I'm **AI Architect** — your **smart assistant** for construction blocks! You can chat with me like a real consultant.\n\n💬 **Just ask me:**\n• \"Which blocks for foundation?\"\n• \"How much concrete for 10×12 house?\"\n• \"Compare P6-20 vs P25\"\n• \"Show all wall blocks\"\n\n✨ **Or use buttons below** ⬇️\n\n🎯 **I'll answer any question in seconds!**",
   "description": "I am your virtual assistant, ready to help you choose the optimal blocks for your construction project.",
   "intro": "I am your personal consultant for construction blocks and architectural solutions.",
   "capabilities": {
