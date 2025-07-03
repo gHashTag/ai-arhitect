@@ -485,7 +485,10 @@ ${Object.entries(CATEGORIES).map(([key, category]) =>
             try {
               // Убираем /blocks-pdf/ из пути, так как product.pdfLink уже содержит полный путь
               const pdfFileName = product.pdfLink.replace('/blocks-pdf/', '');
-              const pdfPath = path.join(__dirname, '..', 'blocks-pdf', pdfFileName);
+              const pdfBasePath = process.env.NODE_ENV === 'production' 
+                ? path.join(__dirname, 'blocks-pdf')
+                : path.join(__dirname, '..', 'blocks-pdf');
+              const pdfPath = path.join(pdfBasePath, pdfFileName);
               
               console.log(`[PDF] Attempting to send: ${pdfPath}`);
               
@@ -693,7 +696,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Статический сервер для PDF файлов
-app.use('/blocks-pdf', express.static(path.join(__dirname, '../blocks-pdf')));
+// В production (dist) файлы будут в dist/blocks-pdf, в dev - в ../blocks-pdf
+const pdfPath = process.env.NODE_ENV === 'production' 
+  ? path.join(__dirname, 'blocks-pdf')
+  : path.join(__dirname, '../blocks-pdf');
+app.use('/blocks-pdf', express.static(pdfPath));
 
 // Health check endpoint для Railway
 app.get('/health', (req, res) => {
