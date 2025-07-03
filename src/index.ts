@@ -1,8 +1,10 @@
 import 'dotenv/config';
 import { Telegraf, Markup } from 'telegraf';
 import express from 'express';
+import path from 'path';
 import { openai } from './services/openai';
 import { getAiFeedbackFromSupabase } from './services/getAiFeedbackFromOpenAI';
+import { PRODUCTS, CATEGORIES, getProductsByCategory, getProductById, formatProductCard, compareProducts, filterProducts } from './services/catalog';
 
 // Проверка обязательных переменных окружения
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -47,21 +49,28 @@ bot.start(async (ctx) => {
   const userName = ctx.from?.first_name || 'Коллега';
   const welcomeMessage = `🏗️ **Добро пожаловать, ${userName}!**
 
-Я **ИИ-Архитект** — ваш персональный консультант по строительным блокам и архитектурным решениям.
+Я **ИИ-Архитектор** — ваш персональный AI-агент и консультант по строительным блокам! 🤖
 
-🤖 **Что я умею:**
-• 📐 Консультировать по техническим характеристикам
-• 🧮 Помогать с расчетами материалов
-• 📚 Отвечать на вопросы по строительным нормам
-• 💡 Предлагать оптимальные решения
+✨ **Я ЖИВОЙ ИИ-АССИСТЕНТ!** Просто пишите мне сообщения как обычному человеку:
+• 💬 "Какие блоки лучше для дома?"
+• 💬 "Рассчитай количество блоков для бани 6×8м"
+• 💬 "Можно ли P6-20 использовать в подвале?"
+• 💬 "Что лучше - P6-20 или P25?"
 
-👇 **Выберите действие:**`;
+🧠 **Мои AI-способности:**
+• 📐 Консультирую по техническим характеристикам
+• 🧮 Помогаю с расчетами материалов
+• 📚 Отвечаю на вопросы по строительным нормам
+• 💡 Предлагаю оптимальные решения
+• ⚡ Анализирую документацию из Vector Store
+
+👇 **Выберите действие или просто напишите вопрос:**`;
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback('🧱 Каталог блоков', 'catalog')],
-    [Markup.button.callback('👨‍💼 Консультация эксперта', 'consult')],
-    [Markup.button.callback('❓ Частые вопросы', 'faq')],
-    [Markup.button.callback('📚 Справка', 'help')]
+    [Markup.button.callback('🤖 AI-Консультация', 'consult')],
+    [Markup.button.callback('⚖️ Сравнить товары', 'compare_start')],
+    [Markup.button.callback('🔍 Фильтры', 'filters'), Markup.button.callback('❓ FAQ', 'faq')]
   ]);
 
   await ctx.reply(welcomeMessage, {
@@ -153,25 +162,17 @@ bot.on('callback_query', async (ctx) => {
       case 'catalog':
         const catalogMessage = `🧱 **Каталог строительных блоков**
 
-**HAUS P6-20** - Блоки-опалубка из бетона
+Выберите категорию товаров для просмотра:
 
-📏 **Технические характеристики:**
-• 📐 Размеры: 498×198×250 мм
-• 💧 Расход бетона: 0.015 м³/блок
-• 📦 В паллете: 50 шт (40M + 10K)
+${Object.entries(CATEGORIES).map(([key, category]) => 
+          `${category.icon} **${category.name}**\n${category.description}`
+        ).join('\n\n')}
 
-🏗️ **Применение:**
-• Ленточные фундаменты
-• Ростверки на сваях
-• Подпорные стены
-• Перемычки
-
-📞 **Контакты:** +37064608801
-🌐 **Сайт:** www.vbg.lt`;
+📊 **Всего товаров в каталоге:** ${PRODUCTS.length}`;
         
         const catalogKeyboard = Markup.inlineKeyboard([
-          [Markup.button.callback('📋 Подробные расчеты', 'calculations')],
-          [Markup.button.callback('📡 Задать вопрос', 'ask_question')],
+          [Markup.button.callback('🏗️ Фундаментные', 'category_foundation'), Markup.button.callback('🧱 Стеновые', 'category_wall')],
+          [Markup.button.callback('⚙️ Специальные', 'category_special'), Markup.button.callback('📋 Все товары', 'all_products')],
           [Markup.button.callback('⬅️ Назад в меню', 'back_to_menu')]
         ]);
         
@@ -301,20 +302,61 @@ bot.on('callback_query', async (ctx) => {
         });
         break;
         
+      // Обработчики категорий товаров
+      case 'category_foundation':
+      case 'category_wall':
+      case 'category_special':
+        const category = callbackData.replace('category_', '');
+        const categoryProducts = getProductsByCategory(category);
+        const categoryInfo = CATEGORIES[category as keyof typeof CATEGORIES];
+        
+        let categoryMessage = `${categoryInfo.icon} **${categoryInfo.name}**\n\n${categoryInfo.description}\n\n📦 **Товары в категории (${categoryProducts.length}):**\n\n`;
+        
+        categoryProducts.forEach((product, index) => {
+          categoryMessage += `${index + 1}. **${product.name}**\n   📐 ${product.dimensions}\n   ${product.description}\n\n`;
+        });
+        
+        const categoryKeyboard = Markup.inlineKeyboard([
+          ...categoryProducts.map(product => 
+            [Markup.button.callback(`🔍 ${product.name}`, `product_${product.id}`)]
+          ),
+          [Markup.button.callback('⬅️ К категориям', 'catalog'), Markup.button.callback('🏗️ Меню', 'back_to_menu')]
+        ]);
+        
+        await ctx.editMessageText(categoryMessage, {
+          parse_mode: 'Markdown',
+          ...categoryKeyboard
+        });
+        break;
+        
+      case 'all_products':
+        let allProductsMessage = `📋 **Весь каталог товаров**\n\nВсего товаров: ${PRODUCTS.length}\n\n`;
+        
+        Object.entries(CATEGORIES).forEach(([key, categoryInfo]) => {
+          const categoryProducts = getProductsByCategory(key);
+          allProductsMessage += `${categoryInfo.icon} **${categoryInfo.name}** (${categoryProducts.length})\n`;
+          categoryProducts.forEach(product => {
+            allProductsMessage += `  • ${product.name}\n`;
+          });
+          allProductsMessage += '\n';
+        });
+        
+        const allProductsKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback('🏗️ Фундаментные', 'category_foundation'), Markup.button.callback('🧱 Стеновые', 'category_wall')],
+          [Markup.button.callback('⚙️ Специальные', 'category_special')],
+          [Markup.button.callback('⬅️ Назад', 'catalog')]
+        ]);
+        
+        await ctx.editMessageText(allProductsMessage, {
+          parse_mode: 'Markdown',
+          ...allProductsKeyboard
+        });
+        break;
+        
       case 'back_to_menu':
         // Возвращаемся к главному меню
         const userName = ctx.from?.first_name || 'Коллега';
-        const backMessage = `🏗️ **Добро пожаловать, ${userName}!**
-
-Я **ИИ-Архитект** — ваш персональный консультант по строительным блокам и архитектурным решениям.
-
-🤖 **Что я умею:**
-• 📐 Консультировать по техническим характеристикам
-• 🧮 Помогать с расчетами материалов
-• 📚 Отвечать на вопросы по строительным нормам
-• 💡 Предлагать оптимальные решения
-
-👇 **Выберите действие:**`;
+        const backMessage = `🏗️ **Добро пожаловать, ${userName}!**\n\nЯ **ИИ-Архитект** — ваш персональный консультант по строительным блокам и архитектурным решениям.\n\n🤖 **Что я умею:**\n• 📐 Консультировать по техническим характеристикам\n• 🧮 Помогать с расчетами материалов\n• 📚 Отвечать на вопросы по строительным нормам\n• 💡 Предлагать оптимальные решения\n\n👇 **Выберите действие:**`;
         
         const mainKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback('🧱 Каталог блоков', 'catalog')],
@@ -329,8 +371,178 @@ bot.on('callback_query', async (ctx) => {
         });
         break;
         
+      case 'filters':
+        const filtersMessage = `🔍 **Фильтры каталога**\n\nВыберите критерий для фильтрации товаров:\n\n🏷️ **По категориям:**\n• 🏗️ Фундаментные блоки\n• 🧱 Стеновые блоки\n• ⚙️ Специальные блоки\n\n🔧 **По применению:**\n• Фундаменты\n• Стены\n• Колонны\n• Вентиляция`;
+        
+        const filtersKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback('🏗️ Фундаментные', 'filter_foundation'), Markup.button.callback('🧱 Стеновые', 'filter_wall')],
+          [Markup.button.callback('⚙️ Специальные', 'filter_special'), Markup.button.callback('💧 С бетоном', 'filter_concrete')],
+          [Markup.button.callback('⚖️ С весом', 'filter_weight'), Markup.button.callback('📝 Все товары', 'catalog')],
+          [Markup.button.callback('⬅️ Назад', 'back_to_menu')]
+        ]);
+        
+        await ctx.editMessageText(filtersMessage, {
+          parse_mode: 'Markdown',
+          ...filtersKeyboard
+        });
+        break;
+        
+      case 'compare_start':
+        const compareMessage = `⚖️ **Сравнение товаров**\n\nВыберите категорию для сравнения:\n\n💡 **Популярные сравнения:**\n• P6-20 vs P25 (фундаментные)\n• S6 vs SM6 (стеновые)\n• S25 vs SP (толщина стен)\n\n🤖 **Либо напишите мне:**\n"Сравни P6-20 и P25" или любую другую пару`;
+        
+        const compareKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback('🏗️ P6-20 vs P25', 'compare_p6-20_p25'), Markup.button.callback('🏗️ P6-20 vs P6-30', 'compare_p6-20_p6-30')],
+          [Markup.button.callback('🧱 S6 vs SM6', 'compare_s6_sm6'), Markup.button.callback('🧱 S25 vs SP', 'compare_s25_sp')],
+          [Markup.button.callback('⚙️ Колонны vs Вентиляция', 'compare_kl28_vb2')],
+          [Markup.button.callback('⬅️ Назад', 'back_to_menu')]
+        ]);
+        
+        await ctx.editMessageText(compareMessage, {
+          parse_mode: 'Markdown',
+          ...compareKeyboard
+        });
+        break;
+        
       default:
-        await ctx.answerCbQuery('Неизвестная команда');
+        // Обработка фильтров
+        if (callbackData.startsWith('filter_')) {
+          const filterType = callbackData.replace('filter_', '');
+          let filteredProducts: any[] = [];
+          let filterTitle = '';
+          
+          switch (filterType) {
+            case 'foundation':
+              filteredProducts = filterProducts({ category: 'foundation' });
+              filterTitle = '🏗️ Фундаментные блоки';
+              break;
+            case 'wall':
+              filteredProducts = filterProducts({ category: 'wall' });
+              filterTitle = '🧱 Стеновые блоки';
+              break;
+            case 'special':
+              filteredProducts = filterProducts({ category: 'special' });
+              filterTitle = '⚙️ Специальные блоки';
+              break;
+            case 'concrete':
+              filteredProducts = filterProducts({ hasConcreteUsage: true });
+              filterTitle = '💧 Блоки с расходом бетона';
+              break;
+            case 'weight':
+              filteredProducts = filterProducts({ hasWeight: true });
+              filterTitle = '⚖️ Блоки с указанным весом';
+              break;
+          }
+          
+          let filterMessage = `🔍 **${filterTitle}**\n\nНайдено товаров: ${filteredProducts.length}\n\n`;
+          
+          filteredProducts.forEach((product, index) => {
+            filterMessage += `${index + 1}. **${product.name}**\n`;
+            filterMessage += `   📐 ${product.dimensions}\n`;
+            if (product.concreteUsage) filterMessage += `   💧 ${product.concreteUsage}\n`;
+            if (product.weight) filterMessage += `   ⚖️ ${product.weight}\n`;
+            filterMessage += `\n`;
+          });
+          
+          const filterResultKeyboard = Markup.inlineKeyboard([
+            ...filteredProducts.slice(0, 5).map((product: any) => 
+              [Markup.button.callback(`🔍 ${product.name}`, `product_${product.id}`)]
+            ),
+            [Markup.button.callback('⬅️ К фильтрам', 'filters'), Markup.button.callback('🏗️ Меню', 'back_to_menu')]
+          ]);
+          
+          await ctx.editMessageText(filterMessage, {
+            parse_mode: 'Markdown',
+            ...filterResultKeyboard
+          });
+        }
+        // Обработка сравнения
+        else if (callbackData.startsWith('compare_')) {
+          const compareIds = callbackData.replace('compare_', '').split('_');
+          const products = compareIds.map(id => getProductById(id)).filter(Boolean) as any[];
+          
+          if (products.length >= 2) {
+            const comparisonText = compareProducts(products);
+            
+            const comparisonKeyboard = Markup.inlineKeyboard([
+              ...products.map((product: any) => 
+                [Markup.button.callback(`🔍 ${product.name}`, `product_${product.id}`)]
+              ),
+              [Markup.button.callback('⬅️ К сравнению', 'compare_start'), Markup.button.callback('🏗️ Меню', 'back_to_menu')]
+            ]);
+            
+            await ctx.editMessageText(comparisonText, {
+              parse_mode: 'Markdown',
+              ...comparisonKeyboard
+            });
+          } else {
+            await ctx.answerCbQuery('Не удалось найти товары для сравнения');
+          }
+        }
+        // Обработка скачивания PDF
+        else if (callbackData.startsWith('pdf_')) {
+          const productId = callbackData.replace('pdf_', '');
+          const product = getProductById(productId);
+          
+          if (product && product.pdfLink) {
+            // Отправляем документ пользователю
+            try {
+              const pdfPath = path.join(__dirname, '..', product.pdfLink);
+              
+              // Проверяем существование файла
+              const fs = require('fs');
+              if (fs.existsSync(pdfPath)) {
+                await ctx.replyWithDocument({
+                  source: pdfPath,
+                  filename: `${product.name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+                }, {
+                  caption: `📄 **${product.name}**\n\nТехническая документация и инструкции по применению.`,
+                  parse_mode: 'Markdown'
+                });
+                
+                await ctx.answerCbQuery('📄 PDF документ отправлен!');
+              } else {
+                await ctx.answerCbQuery('❌ PDF файл не найден');
+              }
+            } catch (error) {
+              console.error('Error sending PDF:', error);
+              await ctx.answerCbQuery('❌ Ошибка при отправке PDF');
+            }
+          } else {
+            await ctx.answerCbQuery('❌ PDF не доступен для этого товара');
+          }
+        }
+        // Обработка детального просмотра товаров
+        else if (callbackData.startsWith('product_')) {
+          const productId = callbackData.replace('product_', '');
+          const product = getProductById(productId);
+          
+          if (product) {
+            const productCard = formatProductCard(product);
+            
+            // Создаем кнопки для карточки товара
+            const buttons = [
+              [Markup.button.callback('📞 Консультация', 'consult'), Markup.button.callback('🧮 Расчеты', 'calculations')]
+            ];
+            
+            // Добавляем кнопку PDF, если есть ссылка
+            if (product.pdfLink) {
+              buttons.push([Markup.button.callback('📄 Скачать PDF', `pdf_${product.id}`)]);
+            }
+            
+            buttons.push([Markup.button.callback('⬅️ К категории', `category_${product.category}`), Markup.button.callback('🏗️ Меню', 'back_to_menu')]);
+            
+            const productKeyboard = Markup.inlineKeyboard(buttons);
+            
+            await ctx.editMessageText(productCard, {
+              parse_mode: 'Markdown',
+              ...productKeyboard
+            });
+          } else {
+            await ctx.answerCbQuery('Товар не найден');
+          }
+        } else {
+          await ctx.answerCbQuery('Неизвестная команда');
+        }
     }
   } catch (error) {
     console.error('[Callback] Error:', error);
@@ -477,6 +689,9 @@ async function setupBotCommands() {
 // Создание HTTP сервера для healthcheck (требуется Railway)
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Статический сервер для PDF файлов
+app.use('/blocks-pdf', express.static(path.join(__dirname, '../blocks-pdf')));
 
 // Health check endpoint для Railway
 app.get('/health', (req, res) => {
