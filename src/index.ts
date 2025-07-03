@@ -100,8 +100,37 @@ initI18n()
     // Команда /blocks
     bot.command("blocks", async (ctx) => {
       const lang = ctx.session?.language || "lt";
-      await ctx.reply(t(lang, "messages.blocks_demo"), {
+      const catalogMessage = `🧱 **${t(lang, "catalog.title")}**\n\n${t(lang, "catalog.select_category")}\n\n${Object.entries(
+        CATEGORIES
+      )
+        .map(
+          ([_, category]) =>
+            `${category.icon} **${category.name}**\n${category.description}`
+        )
+        .join("\n\n")}\n\n📊 **${t(lang, "catalog.total_products", {
+        count: PRODUCTS.length,
+      })}**`;
+
+      const catalogKeyboard = Markup.inlineKeyboard([
+        [
+          Markup.button.callback(
+            t(lang, "categories.foundation"),
+            "category_foundation"
+          ),
+          Markup.button.callback(t(lang, "categories.wall"), "category_wall"),
+        ],
+        [
+          Markup.button.callback(
+            t(lang, "categories.special"),
+            "category_special"
+          ),
+          Markup.button.callback(t(lang, "categories.all"), "all_products"),
+        ],
+      ]);
+
+      await ctx.reply(catalogMessage, {
         parse_mode: "Markdown",
+        ...catalogKeyboard,
       });
     });
 
