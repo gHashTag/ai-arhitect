@@ -32,7 +32,7 @@ export const PRODUCTS: Product[] = [
       'Удобный монтаж'
     ],
     category: 'foundation',
-    pdfLink: '/blocks-pdf/ESD_P6-20.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ESD_P6-20.pdf'
   },
   {
     id: 'p25',
@@ -52,7 +52,7 @@ export const PRODUCTS: Product[] = [
       'Морозостойкость'
     ],
     category: 'foundation',
-    pdfLink: '/blocks-pdf/ECD 016 P25.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ECD%20016%20P25.pdf'
   },
   {
     id: 'p6-30',
@@ -72,7 +72,7 @@ export const PRODUCTS: Product[] = [
       'Долговечность'
     ],
     category: 'foundation',
-    pdfLink: '/blocks-pdf/ESD 84 P6-30.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ESD%2084%20P6-30.pdf'
   },
   {
     id: 'kl28',
@@ -93,7 +93,7 @@ export const PRODUCTS: Product[] = [
       'Огнестойкость'
     ],
     category: 'special',
-    pdfLink: '/blocks-pdf/ECD 012B KL-28.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ECD%20012B%20KL-28.pdf'
   },
   {
     id: 's6',
@@ -112,7 +112,7 @@ export const PRODUCTS: Product[] = [
       'Отличная геометрия'
     ],
     category: 'wall',
-    pdfLink: '/blocks-pdf/ECD 91 S6.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ECD%2091%20S6.pdf'
   },
   {
     id: 'sm6',
@@ -131,7 +131,7 @@ export const PRODUCTS: Product[] = [
       'Повышенная прочность'
     ],
     category: 'wall',
-    pdfLink: '/blocks-pdf/ECD 92 SM6.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ECD%2092%20SM6.pdf'
   },
   {
     id: 'sp',
@@ -150,7 +150,7 @@ export const PRODUCTS: Product[] = [
       'Легкий вес'
     ],
     category: 'wall',
-    pdfLink: '/blocks-pdf/ECD 98 SP.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ECD%2098%20SP.pdf'
   },
   {
     id: 's25',
@@ -169,7 +169,7 @@ export const PRODUCTS: Product[] = [
       'Отличная звукоизоляция'
     ],
     category: 'wall',
-    pdfLink: '/blocks-pdf/ECD 915 S25.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/ECD%20915%20S25.pdf'
   },
   {
     id: 'vb2',
@@ -189,7 +189,7 @@ export const PRODUCTS: Product[] = [
       'Точная геометрия'
     ],
     category: 'special',
-    pdfLink: '/blocks-pdf/VB-2 deklaracija.pdf'
+    pdfLink: 'https://raw.githubusercontent.com/gHashTag/ai-arhitect/pdf-storage/blocks-pdf/VB-2%20deklaracija.pdf'
   }
 ];
 

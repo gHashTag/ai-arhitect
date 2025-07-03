@@ -1,9 +1,12 @@
-# Временно исключаем PDF файлы из деплоя (47MB слишком много)
+# PDF файлы теперь хранятся в GitHub CDN
 blocks-pdf/
-# Исключаем dev файлы
+
+# Dev файлы
 node_modules/
 .env
 .env.local
 *.log
 dist/
 .DS_Store
+README.md
+.git/
