@@ -42,7 +42,15 @@ export async function getAiFeedbackFromSupabase({
     // Step 3: Run the assistant using assistantId
     const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
       assistant_id,
-      instructions: `Обращайтесь к пользователю по имени: ${full_name}, и отвечайте на языке: ${language_code}. 
+      instructions: `Обращайтесь к пользователю по имени: ${full_name}.
+
+ОЧЕНЬ ВАЖНО: Обязательно отвечайте на том же языке, на котором пользователь написал свой вопрос.
+Код языка пользователя: ${language_code}
+- Если language_code = 'lt' - отвечайте на литовском языке (lietuvių kalba)
+- Если language_code = 'ru' - отвечайте на русском языке
+- Если language_code = 'en' - отвечайте на английском языке (English)
+
+Если пользователь пишет на одном языке, а language_code указывает на другой - всегда отвечайте на языке, на котором пишет пользователь.
 
 Вы - специализированный ИИ-консультант по строительным блокам и архитектурным решениям.
 

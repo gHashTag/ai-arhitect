@@ -15,7 +15,8 @@
     "compare": "⚖️ Compare",
     "filters": "🔍 Filters",
     "faq": "❓ FAQ",
-    "help": "📚 Help"
+    "help": "📚 Help",
+    "language": "🌐 Language"
   },
   "categories": {
     "foundation": "🏗️ Foundation",
@@ -123,6 +124,8 @@
       "recommend_wall": "• For walls consider thermal insulation",
       "characteristic": "Characteristic",
       "category": "🏷️ Category"
-    }
+    },
+    "language_changed": "✅ Language changed to English",
+    "select_language": "🌐 Select language / Pasirinkite kalbą / Выберите язык:"
   }
 }

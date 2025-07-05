@@ -3,7 +3,8 @@ import { Telegraf, Markup } from "telegraf";
 import express from "express";
 import path from "path";
 import { openai } from "./services/openai";
-import { initI18n, determineLanguage, t } from "./services/i18n";
+import { initI18n, determineLanguage, t, SupportedLanguage } from "./services/i18n";
+import { UserLanguageManager } from "./services/userLanguageManager";
 import { getAiFeedbackFromSupabase } from "./services/getAiFeedbackFromOpenAI";
 import {
   PRODUCTS,
@@ -49,11 +50,13 @@ async function checkAssistantAvailability(): Promise<boolean> {
 
 // Middleware для выбора языка
 bot.use((ctx, next) => {
-  const userLanguageCode = ctx.from?.language_code;
+  // Используем UserLanguageManager для получения языка пользователя
+  const language = UserLanguageManager.getUserLanguage(ctx);
   if (!ctx.session) {
-    ctx.session = { language: "lt" };
+    ctx.session = { language };
+  } else {
+    ctx.session.language = language;
   }
-  ctx.session.language = determineLanguage(userLanguageCode);
   return next();
 });
 
@@ -75,6 +78,8 @@ initI18n()
       // Полностью локализованное приветственное сообщение формируется одной строкой из файлов перевода
       const welcomeMessage = t(lang, "welcome", { user: userName });
 
+      const languageButton = UserLanguageManager.getLanguageButton(lang);
+      
       const keyboard = Markup.inlineKeyboard([
         [Markup.button.callback(t(lang, "menu.catalog"), "catalog")],
         [Markup.button.callback(t(lang, "menu.consult"), "consult")],
@@ -83,6 +88,7 @@ initI18n()
           Markup.button.callback(t(lang, "menu.filters"), "filters"),
           Markup.button.callback(t(lang, "menu.faq"), "faq"),
         ],
+        [Markup.button.callback(languageButton, "language_menu")],
       ]);
 
       await ctx.reply(welcomeMessage, {
@@ -139,6 +145,25 @@ initI18n()
       const lang = ctx.session?.language || "lt";
       await ctx.reply(t(lang, "messages.consult"), { parse_mode: "Markdown" });
     });
+    
+    // Команда /language
+    bot.command("language", async (ctx) => {
+      const lang = ctx.session?.language || "lt";
+      const selectLanguageMessage = t(lang, "messages.select_language");
+      
+      const languageKeyboard = Markup.inlineKeyboard([
+        [
+          Markup.button.callback("🇱🇹 Lietuvių", "set_language_lt"),
+          Markup.button.callback("🇷🇺 Русский", "set_language_ru"),
+          Markup.button.callback("🇬🇧 English", "set_language_en"),
+        ],
+      ]);
+      
+      await ctx.reply(selectLanguageMessage, {
+        parse_mode: "Markdown",
+        ...languageKeyboard,
+      });
+    });
 
     // Обработка callback запросов (inline кнопки)
     bot.on("callback_query", async (ctx) => {
@@ -189,6 +214,64 @@ initI18n()
             await ctx.editMessageText(catalogMessage, {
               parse_mode: "Markdown",
               ...catalogKeyboard,
+            });
+            break;
+
+          case "language_menu":
+            // Показываем меню выбора языка
+            const selectLanguageMessage = t(lang, "messages.select_language");
+            
+            const languageKeyboard = Markup.inlineKeyboard([
+              [
+                Markup.button.callback("🇱🇹 Lietuvių", "set_language_lt"),
+                Markup.button.callback("🇷🇺 Русский", "set_language_ru"),
+                Markup.button.callback("🇬🇧 English", "set_language_en"),
+              ],
+              [Markup.button.callback(t(lang, "back_to_menu"), "back_to_menu")],
+            ]);
+            
+            await ctx.editMessageText(selectLanguageMessage, {
+              parse_mode: "Markdown",
+              ...languageKeyboard,
+            });
+            break;
+            
+          case "set_language_lt":
+          case "set_language_ru":
+          case "set_language_en":
+            // Устанавливаем новый язык
+            const newLang = callbackData.replace("set_language_", "") as SupportedLanguage;
+            if (ctx.from?.id) {
+              UserLanguageManager.setUserLanguage(ctx.from.id, newLang);
+            }
+            
+            // Обновляем сессию
+            if (ctx.session) {
+              ctx.session.language = newLang;
+            }
+            
+            // Показываем сообщение об изменении языка
+            await ctx.answerCbQuery(t(newLang, "messages.language_changed"));
+            
+            // Возвращаемся в главное меню с обновленным языком
+            const userName = ctx.from?.first_name || t(newLang, "messages.colleague_fallback");
+            const welcomeMessage = t(newLang, "welcome", { user: userName });
+            const newLanguageButton = UserLanguageManager.getLanguageButton(newLang);
+            
+            const mainKeyboard = Markup.inlineKeyboard([
+              [Markup.button.callback(t(newLang, "menu.catalog"), "catalog")],
+              [Markup.button.callback(t(newLang, "menu.consult"), "consult")],
+              [Markup.button.callback(t(newLang, "menu.compare"), "compare_start")],
+              [
+                Markup.button.callback(t(newLang, "menu.filters"), "filters"),
+                Markup.button.callback(t(newLang, "menu.faq"), "faq"),
+              ],
+              [Markup.button.callback(newLanguageButton, "language_menu")],
+            ]);
+            
+            await ctx.editMessageText(welcomeMessage, {
+              parse_mode: "Markdown",
+              ...mainKeyboard,
             });
             break;
 
@@ -349,20 +432,25 @@ initI18n()
 
           case "back_to_menu":
             // Возвращаемся к главному меню
-            const userName =
+            const backUserName =
               ctx.from?.first_name || t(lang, "messages.colleague_fallback");
-            const backMessage = t(lang, "messages.welcome", { user: userName });
+            const backWelcomeMessage = t(lang, "welcome", { user: backUserName });
+            const backLanguageButton = UserLanguageManager.getLanguageButton(lang);
 
-            const mainKeyboard = Markup.inlineKeyboard([
+            const backToMainKeyboard = Markup.inlineKeyboard([
               [Markup.button.callback(t(lang, "menu.catalog"), "catalog")],
               [Markup.button.callback(t(lang, "menu.consult"), "consult")],
-              [Markup.button.callback(t(lang, "menu.faq"), "faq")],
-              [Markup.button.callback(t(lang, "menu.help"), "help")],
+              [Markup.button.callback(t(lang, "menu.compare"), "compare_start")],
+              [
+                Markup.button.callback(t(lang, "menu.filters"), "filters"),
+                Markup.button.callback(t(lang, "menu.faq"), "faq"),
+              ],
+              [Markup.button.callback(backLanguageButton, "language_menu")],
             ]);
 
-            await ctx.editMessageText(backMessage, {
+            await ctx.editMessageText(backWelcomeMessage, {
               parse_mode: "Markdown",
-              ...mainKeyboard,
+              ...backToMainKeyboard,
             });
             break;
 
@@ -666,10 +754,11 @@ initI18n()
         const userMessage = ctx.message.text;
         const userName =
           ctx.from.first_name || t(lang, "messages.colleague_fallback");
-        const userLanguage = ctx.from.language_code || "ru";
+        // Передаем язык из сессии пользователя, а не из Telegram
+        const userLanguage = lang; // Используем язык из сессии
 
         console.log(
-          `[Assistant] Processing message from ${userName}: ${userMessage}`
+          `[Assistant] Processing message from ${userName}: ${userMessage} (Language: ${userLanguage})`
         );
 
         // Отправляем сообщение о прогрессе
@@ -781,6 +870,10 @@ initI18n()
           {
             command: "consult",
             description: "👨‍💼 Экспертная консультация архитектора",
+          },
+          {
+            command: "language",
+            description: "🌐 Выбор языка / Language / Kalba",
           },
         ]);
         console.log("✅ Bot commands configured successfully");

@@ -14,7 +14,8 @@
     "compare": "⚖️ Palyginti",
     "filters": "🔍 Filtrai",
     "faq": "❓ DUK",
-    "help": "📚 Pagalba"
+    "help": "📚 Pagalba",
+    "language": "🌐 Kalba"
   },
   "categories": {
     "foundation": "🏗️ Pamatiniai",
@@ -119,6 +120,11 @@
       "recommend_wall": "• Sienoms atsižvelkite į termoizoliacines savybes",
       "characteristic": "Charakteristika",
       "category": "🏷️ Kategorija"
-    }
+    },
+    "category": {
+      "products_count": "Kategorijos prekės ({{count}}):"
+    },
+    "language_changed": "✅ Kalba pakeista į lietuvių",
+    "select_language": "🌐 Pasirinkite kalbą / Select language / Выберите язык:"
   }
 }
