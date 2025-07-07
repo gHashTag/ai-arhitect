@@ -5,6 +5,11 @@ type GetAiSupabaseFeedbackT = {
   report: string
   language_code: string
   full_name: string
+  context?: Array<{
+    role: string
+    content: string
+    metadata?: Record<string, any>
+  }>
 }
 
 function removeAnnotations(text: string): string {

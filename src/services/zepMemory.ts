@@ -1,17 +1,32 @@
 import { ZepClient } from '@getzep/zep-js';
+import { CreateSessionRequest, Session, MemoryListSessionsRequest, SessionSearchQuery, Memory as ZepMemory, MemoryGetSessionMessagesRequest } from '@getzep/zep-js/dist/api';
 
 // Создаем клиента Zep с API ключом из окружения
-const zepClient = new ZepClient(process.env.ZEP_API_KEY);
+const apiKey = process.env.ZEP_API_KEY;
+if (!apiKey) {
+  throw new Error('ZEP_API_KEY is required');
+}
+
+const zepClient = new ZepClient({
+  apiKey,
+  baseUrl: 'https://api.zep.ai'
+});
 
 // Название коллекции для хранения истории разговоров
 const COLLECTION_NAME = 'ai-architect-chat-history';
+
+interface IMemoryContent {
+  role: string;
+  content: string;
+  metadata?: Record<string, any>;
+}
 
 /**
  * Сервис для работы с памятью через Zep
  */
 export class ZepMemoryService {
   private static instance: ZepMemoryService;
-  private collection: any;
+  private memory = zepClient.memory;
 
   private constructor() {}
 
@@ -31,26 +46,24 @@ export class ZepMemoryService {
    */
   private async initialize() {
     try {
-      // Проверяем существование коллекции
-      const collections = await zepClient.listCollections();
-      const existingCollection = collections.find(c => c.name === COLLECTION_NAME);
-
-      if (!existingCollection) {
-        // Создаем новую коллекцию, если не существует
-        this.collection = await zepClient.createCollection({
-          name: COLLECTION_NAME,
+      // Создаем новую сессию
+      const sessionRequest: CreateSessionRequest = {
+        sessionId: COLLECTION_NAME,
+        metadata: {
           description: 'История разговоров AI Architect бота',
-          metadata: {
-            source: 'telegram',
-            type: 'chat_history'
-          }
-        });
-      } else {
-        this.collection = existingCollection;
-      }
+          source: 'telegram',
+          type: 'chat_history'
+        }
+      };
 
+      await this.memory.addSession(sessionRequest);
       console.log(`✅ Zep память инициализирована: ${COLLECTION_NAME}`);
     } catch (error) {
+      // Если коллекция уже существует, это нормально
+      if ((error as Error).message?.includes('already exists')) {
+        console.log(`✅ Используем существующую коллекцию: ${COLLECTION_NAME}`);
+        return;
+      }
       console.error('❌ Ошибка инициализации Zep памяти:', error);
       throw error;
     }
@@ -67,14 +80,16 @@ export class ZepMemoryService {
     try {
       const sessionId = `user_${userId}`;
       
-      await zepClient.addMemory(COLLECTION_NAME, sessionId, {
-        role: message.role,
-        content: message.content,
-        metadata: {
-          ...message.metadata,
-          timestamp: new Date().toISOString(),
-          userId: userId
-        }
+      await this.memory.add(sessionId, {
+        messages: [{
+          role: message.role,
+          content: message.content,
+          metadata: {
+            ...message.metadata,
+            timestamp: new Date().toISOString(),
+            userId: userId
+          }
+        }]
       });
 
       console.log(`✅ Сообщение сохранено в Zep для пользователя ${userId}`);
@@ -87,20 +102,19 @@ export class ZepMemoryService {
   /**
    * Получить последние сообщения из истории
    */
-  public async getRecentMessages(userId: number, limit: number = 10): Promise<Array<{
-    role: string;
-    content: string;
-    metadata?: Record<string, any>;
-  }>> {
+  public async getRecentMessages(userId: number, limit: number = 10): Promise<IMemoryContent[]> {
     try {
       const sessionId = `user_${userId}`;
-      const messages = await zepClient.searchMemory(COLLECTION_NAME, sessionId, {
-        limit
-      });
+      const request: MemoryGetSessionMessagesRequest = { limit };
+      const response = await this.memory.getSessionMessages(sessionId, request);
 
-      return messages.map(m => ({
-        role: m.role,
-        content: m.content,
+      if (!response.messages) {
+        return [];
+      }
+
+      return response.messages.map(m => ({
+        role: m.role || 'unknown',
+        content: m.content || '',
         metadata: m.metadata
       }));
     } catch (error) {
@@ -112,24 +126,30 @@ export class ZepMemoryService {
   /**
    * Поиск похожих сообщений по контексту
    */
-  public async searchSimilarMessages(userId: number, query: string, limit: number = 5): Promise<Array<{
-    role: string;
-    content: string;
-    metadata?: Record<string, any>;
-    similarity: number;
-  }>> {
+  public async searchSimilarMessages(userId: number, query: string, limit: number = 5): Promise<Array<IMemoryContent & { similarity: number }>> {
     try {
       const sessionId = `user_${userId}`;
-      const results = await zepClient.searchMemory(COLLECTION_NAME, sessionId, {
-        text: query,
-        limit
-      });
+      
+      const response = await this.memory.getSessionMessages(sessionId, { limit });
 
-      return results.map(r => ({
-        role: r.role,
-        content: r.content,
-        metadata: r.metadata,
-        similarity: r.similarity || 0
+      if (!response.messages?.length) {
+        return [];
+      }
+
+      // Сортируем сообщения по релевантности к запросу
+      const messages = response.messages
+        .map(m => ({
+          message: m,
+          similarity: this.calculateSimilarity(query, m.content || '')
+        }))
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, limit);
+
+      return messages.map(({ message: m, similarity }) => ({
+        role: m.role || 'unknown',
+        content: m.content || '',
+        metadata: m.metadata,
+        similarity
       }));
     } catch (error) {
       console.error('❌ Ошибка поиска в Zep:', error);
@@ -143,11 +163,27 @@ export class ZepMemoryService {
   public async clearUserHistory(userId: number) {
     try {
       const sessionId = `user_${userId}`;
-      await zepClient.deleteMemory(COLLECTION_NAME, sessionId);
+      await this.memory.delete(sessionId);
       console.log(`✅ История пользователя ${userId} очищена`);
     } catch (error) {
       console.error('❌ Ошибка очистки истории в Zep:', error);
       throw error;
     }
+}
+
+  /**
+   * Вспомогательный метод для расчета релевантности
+   * В реальном приложении здесь можно использовать более сложные алгоритмы
+   */
+  private calculateSimilarity(query: string, content: string): number {
+    const queryWords = new Set(query.toLowerCase().split(' '));
+    const contentWords = new Set(content.toLowerCase().split(' '));
+
+    let matches = 0;
+    for (const word of queryWords) {
+      if (contentWords.has(word)) matches++;
+    }
+
+    return matches / queryWords.size || 0;
   }
 }
