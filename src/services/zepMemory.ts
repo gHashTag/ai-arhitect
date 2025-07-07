@@ -7,10 +7,7 @@ if (!apiKey) {
   throw new Error('ZEP_API_KEY is required');
 }
 
-const zepClient = new ZepClient({
-  apiKey,
-  baseUrl: 'https://api.zep.ai'
-});
+const zepClient = new ZepClient({ apiKey, baseUrl: 'https://api.zep.ai' });
 
 // Название коллекции для хранения истории разговоров
 const COLLECTION_NAME = 'ai-architect-chat-history';
@@ -45,7 +42,17 @@ export class ZepMemoryService {
    * Инициализация коллекции
    */
   private async initialize() {
+    console.log('🔄 Инициализация Zep памяти...');
     try {
+      // Проверяем соединение, пытаясь получить список сессий
+      try {
+        await this.memory.listSessions();
+        console.log('✅ Соединение с Zep установлено');
+      } catch (err) {
+        console.error('❌ Ошибка соединения с Zep:', err);
+        throw err;
+      }
+
       // Создаем новую сессию
       const sessionRequest: CreateSessionRequest = {
         sessionId: COLLECTION_NAME,

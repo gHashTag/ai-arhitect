@@ -1,4 +1,13 @@
-import "dotenv/config";
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+// Проверяем, что переменные окружения загружены
+console.log('🔍 Environment variables loaded:', {
+  BOT_TOKEN: process.env.BOT_TOKEN ? '✅' : '❌',
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY ? '✅' : '❌',
+  OPENAI_ASSISTANT_ID: process.env.OPENAI_ASSISTANT_ID ? '✅' : '❌',
+  ZEP_API_KEY: process.env.ZEP_API_KEY ? '✅' : '❌',
+});
 import { Telegraf, Markup } from "telegraf";
 import express from "express";
 import path from "path";
@@ -7,6 +16,7 @@ import { initI18n, determineLanguage, t, SupportedLanguage } from "./services/i1
 import { ZepMemoryService } from "./services/zepMemory";
 import { UserLanguageManager } from "./services/userLanguageManager";
 import { getAiFeedbackFromSupabase } from "./services/getAiFeedbackFromOpenAI";
+import { setupBotCommands, getBotCommands } from './config/commands';
 import {
   PRODUCTS,
   CATEGORIES,
@@ -35,7 +45,7 @@ if (!ASSISTANT_ID) {
 }
 
 // Создание экземпляра бота
-const bot = new Telegraf(BOT_TOKEN);
+const bot: Telegraf = new Telegraf(BOT_TOKEN);
 
 // Функция проверки Assistant доступности
 async function checkAssistantAvailability(): Promise<boolean> {
@@ -895,30 +905,6 @@ initI18n()
       });
     });
 
-    // Функция настройки команд бота
-    async function setupBotCommands() {
-      try {
-        await bot.telegram.setMyCommands([
-          { command: "start", description: "🏗️ Главное меню и приветствие" },
-          { command: "help", description: "📚 Справка по использованию бота" },
-          {
-            command: "blocks",
-            description: "🧱 Каталог строительных блоков HAUS",
-          },
-          {
-            command: "consult",
-            description: "👨‍💼 Экспертная консультация архитектора",
-          },
-          {
-            command: "language",
-            description: "🌐 Выбор языка / Language / Kalba",
-          },
-        ]);
-        console.log("✅ Bot commands configured successfully");
-      } catch (error) {
-        console.error("❌ Error setting bot commands:", error);
-      }
-    }
 
     // Создание HTTP сервера для healthcheck (требуется Railway)
     const app = express();
@@ -985,8 +971,16 @@ initI18n()
           "💬 Ready to assist with construction blocks and architecture!"
         );
 
-        // Настраиваем команды бота
-        await setupBotCommands();
+        // Инициализируем команды бота на всех языках
+        const languages: SupportedLanguage[] = ['lt', 'ru', 'en'];
+        
+        // Устанавливаем команды для каждого языка
+        for (const lang of languages) {
+          await setupBotCommands(bot, lang);
+        }
+        
+        // Устанавливаем команды по умолчанию (без языкового параметра) на английском
+        await bot.telegram.setMyCommands(getBotCommands('en'));
       })
       .catch((error) => {
         console.error("❌ Failed to start bot:", error);

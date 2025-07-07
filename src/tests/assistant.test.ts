@@ -1,20 +1,22 @@
 import { AssistantService } from '../services/assistant';
 
+import { vi, describe, test, expect, beforeEach } from 'vitest';
+
 // Mock OpenAI
-jest.mock('../services/openai', () => ({
+vi.mock('../services/openai', () => ({
   openai: {
     beta: {
       assistants: {
-        retrieve: jest.fn(),
+      retrieve: vi.fn(),
       },
       threads: {
-        create: jest.fn(),
+        create: vi.fn(),
         messages: {
-          create: jest.fn(),
-          list: jest.fn(),
+          create: vi.fn(),
+          list: vi.fn(),
         },
         runs: {
-          createAndPoll: jest.fn(),
+          createAndPoll: vi.fn(),
         },
       },
     },
