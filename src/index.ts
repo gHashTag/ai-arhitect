@@ -4,6 +4,7 @@ import express from "express";
 import path from "path";
 import { openai } from "./services/openai";
 import { initI18n, determineLanguage, t, SupportedLanguage } from "./services/i18n";
+import { ZepMemoryService } from "./services/zepMemory";
 import { UserLanguageManager } from "./services/userLanguageManager";
 import { getAiFeedbackFromSupabase } from "./services/getAiFeedbackFromOpenAI";
 import {
@@ -767,11 +768,48 @@ initI18n()
         });
 
         // Получаем ответ от OpenAI Assistant
+        // Получаем экземпляр сервиса памяти
+        const zepMemory = await ZepMemoryService.getInstance();
+
+        // Получаем последние сообщения из истории
+        const recentMessages = await zepMemory.getRecentMessages(ctx.from.id);
+
+        // Ищем похожие сообщения
+        const similarMessages = await zepMemory.searchSimilarMessages(ctx.from.id, userMessage);
+
+        // Формируем контекст из истории и похожих сообщений
+        const contextMessages = [
+          ...recentMessages,
+          ...(similarMessages.length > 0 ? 
+            [{ role: 'system', content: 'Похожие предыдущие вопросы:' }, ...similarMessages] 
+            : [])
+        ];
+
+        // Получаем ответ от AI с учетом контекста
         const { ai_response } = await getAiFeedbackFromSupabase({
           assistant_id: ASSISTANT_ID!,
           report: userMessage,
           language_code: userLanguage,
           full_name: userName,
+          context: contextMessages,
+        });
+
+        // Сохраняем сообщение пользователя и ответ в памяти
+        await zepMemory.addMessage(ctx.from.id, {
+          role: 'user',
+          content: userMessage,
+          metadata: {
+            language: userLanguage,
+            userName: userName
+          }
+        });
+
+        await zepMemory.addMessage(ctx.from.id, {
+          role: 'assistant',
+          content: ai_response,
+          metadata: {
+            language: userLanguage
+          }
         });
 
         // Удаляем сообщение о прогрессе
