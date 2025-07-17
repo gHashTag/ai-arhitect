@@ -15,6 +15,7 @@ import { openai } from "./services/openai";
 import {
   initI18n,
   determineLanguage,
+  detectLanguageFromText,
   t,
   SupportedLanguage,
 } from "./services/i18n";
@@ -781,6 +782,9 @@ initI18n()
       let progressMessage: any = null;
       const lang = ctx.session?.language || "lt";
 
+      // Объявляем detectedLanguage здесь, чтобы он был доступен в catch блоке
+      let detectedLanguage: SupportedLanguage = lang;
+
       try {
         // Показываем индикатор печати
         await ctx.sendChatAction("typing");
@@ -788,8 +792,22 @@ initI18n()
         const userMessage = ctx.message.text;
         const userName =
           ctx.from.first_name || t(lang, "messages.colleague_fallback");
-        // Передаем язык из сессии пользователя, а не из Telegram
-        const userLanguage = lang; // Используем язык из сессии
+
+        // 🔄 Автоматически определяем язык по содержимому сообщения
+        detectedLanguage = detectLanguageFromText(userMessage);
+
+        // Если обнаруженный язык отличается от языка сессии, обновляем сессию
+        if (detectedLanguage !== lang && ctx.from?.id) {
+          UserLanguageManager.setUserLanguage(ctx.from.id, detectedLanguage);
+          if (ctx.session) {
+            ctx.session.language = detectedLanguage;
+          }
+          console.log(
+            `🔄 [Language] Auto-detected and switched to: ${detectedLanguage}`
+          );
+        }
+
+        const userLanguage = detectedLanguage;
 
         console.log(
           `[Assistant] Processing message from ${userName}: ${userMessage} (Language: ${userLanguage})`
@@ -861,22 +879,41 @@ initI18n()
           });
 
           // Добавляем кнопки для дополнительных действий
+          const currentLanguageButton =
+            UserLanguageManager.getLanguageButton(detectedLanguage);
           const followUpKeyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(t(lang, "ask_question"), "ask_question")],
             [
-              Markup.button.callback(t(lang, "categories.catalog"), "catalog"),
-              Markup.button.callback(t(lang, "back_to_menu"), "back_to_menu"),
+              Markup.button.callback(
+                t(detectedLanguage, "ask_question"),
+                "ask_question"
+              ),
             ],
+            [
+              Markup.button.callback(
+                t(detectedLanguage, "categories.catalog"),
+                "catalog"
+              ),
+              Markup.button.callback(
+                t(detectedLanguage, "back_to_menu"),
+                "back_to_menu"
+              ),
+            ],
+            [Markup.button.callback(currentLanguageButton, "language_menu")],
           ]);
 
-          await ctx.reply(t(lang, "messages.follow_up_prompt"), {
+          await ctx.reply(t(detectedLanguage, "messages.follow_up_prompt"), {
             ...followUpKeyboard,
           });
         } else {
-          await ctx.reply(t(lang, "messages.unable_process"), {
+          await ctx.reply(t(detectedLanguage, "messages.unable_process"), {
             ...Markup.inlineKeyboard([
-              [Markup.button.callback(t(lang, "help"), "help")],
-              [Markup.button.callback(t(lang, "back_to_menu"), "back_to_menu")],
+              [Markup.button.callback(t(detectedLanguage, "help"), "help")],
+              [
+                Markup.button.callback(
+                  t(detectedLanguage, "back_to_menu"),
+                  "back_to_menu"
+                ),
+              ],
             ]),
           });
         }
@@ -892,13 +929,20 @@ initI18n()
           }
         }
 
-        const errorMessage = t(lang, "messages.error_generic");
+        // Используем обнаруженный язык или падаем обратно на язык сессии
+        const errorLanguage = detectedLanguage || lang;
+        const errorMessage = t(errorLanguage, "messages.error_generic");
 
         await ctx.reply(errorMessage, {
           parse_mode: "Markdown",
           ...Markup.inlineKeyboard([
-            [Markup.button.callback(t(lang, "help"), "help")],
-            [Markup.button.callback(t(lang, "back_to_menu"), "back_to_menu")],
+            [Markup.button.callback(t(errorLanguage, "help"), "help")],
+            [
+              Markup.button.callback(
+                t(errorLanguage, "back_to_menu"),
+                "back_to_menu"
+              ),
+            ],
           ]),
         });
       }
