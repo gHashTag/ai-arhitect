@@ -98,7 +98,7 @@
     },
     "filter_results": "🔍 **{title}**\n\nRasta prekių: {count}\n\n",
     "compare_not_found": "Nepavyko rasti prekių palyginimui",
-    "pdf_intro": "📄 **Techninė dokumentacija {name}**\n\n🔗 **Atsisiųsti PDF dokumentaciją:**\n[📋 {name}.pdf]({link})\n\n📋 **Dokumentacijoje:**\n• Techninės charakteristikos\n• Naudojimo instrukcijos\n• Montažo schemos\n• Medžiagų skaičiavimai\n\n💡 Spauskite nuorodą aukščiau, kad atsisiųstumėte failą.",
+    "pdf_intro": "📄 **Techninė dokumentacija {{name}}**\n\n🔗 **Atsisiųsti PDF dokumentaciją:**\n[📋 {{name}}.pdf]({{link}})\n\n📋 **Dokumentacijoje:**\n• Techninės charakteristikos\n• Naudojimo instrukcijos\n• Montažo schemos\n• Medžiagų skaičiavimai\n\n💡 Spauskite nuorodą aukščiau, kad atsisiųstumėte failą.",
     "pdf_sent": "📄 PDF nuoroda išsiųsta!",
     "pdf_unavailable": "❌ PDF šiam produktui neprieinamas",
     "colleague_fallback": "Kolega",

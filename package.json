@@ -4,7 +4,7 @@
   "description": "ИИ-агент консультант для проектировщиков и архитекторов",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "lsof -ti:3010 | xargs kill -9 2>/dev/null || true && tsx watch src/index.ts",
     "build": "tsc && cp -r locales dist/",
     "start": "node dist/index.js",
     "test": "vitest",
@@ -22,9 +22,9 @@
   "author": "playra",
   "license": "ISC",
   "dependencies": {
-    "@getzep/zep-js": "2.0.2",
+    "@getzep/zep-cloud": "^2.18.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^4.19.2",
     "i18next": "^25.3.0",
     "openai": "^4.52.0",

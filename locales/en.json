@@ -107,7 +107,7 @@
       "weight": "⚖️ Blocks with weight info"
     },
     "filter_results": "🔍 **{title}**\n\nFound items: {count}\n\n",
-    "pdf_intro": "📄 **Technical documentation {name}**\n\n🔗 **Download PDF documentation:**\n[📋 {name}.pdf]({link})\n\n📋 **In the document:**\n• Technical specifications\n• Usage instructions\n• Mounting schemes\n• Material calculations\n\n💡 Click the link above to download.",
+    "pdf_intro": "📄 **Technical documentation {{name}}**\n\n🔗 **Download PDF documentation:**\n[📋 {{name}}.pdf]({{link}})\n\n📋 **In the document:**\n• Technical specifications\n• Usage instructions\n• Mounting schemes\n• Material calculations\n\n💡 Click the link above to download.",
     "compare_not_found": "Could not find products to compare",
     "product_sections": {
       "tech_specs": "📐 **Technical specifications:**",

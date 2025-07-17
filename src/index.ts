@@ -1,22 +1,27 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 dotenv.config();
 
 // Проверяем, что переменные окружения загружены
-console.log('🔍 Environment variables loaded:', {
-  BOT_TOKEN: process.env.BOT_TOKEN ? '✅' : '❌',
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY ? '✅' : '❌',
-  OPENAI_ASSISTANT_ID: process.env.OPENAI_ASSISTANT_ID ? '✅' : '❌',
-  ZEP_API_KEY: process.env.ZEP_API_KEY ? '✅' : '❌',
+console.log("🔍 Environment variables loaded:", {
+  BOT_TOKEN: process.env.BOT_TOKEN ? "✅" : "❌",
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY ? "✅" : "❌",
+  OPENAI_ASSISTANT_ID: process.env.OPENAI_ASSISTANT_ID ? "✅" : "❌",
+  ZEP_API_KEY: process.env.ZEP_API_KEY ? "✅" : "❌",
 });
 import { Telegraf, Markup } from "telegraf";
 import express from "express";
 import path from "path";
 import { openai } from "./services/openai";
-import { initI18n, determineLanguage, t, SupportedLanguage } from "./services/i18n";
+import {
+  initI18n,
+  determineLanguage,
+  t,
+  SupportedLanguage,
+} from "./services/i18n";
 import { ZepMemoryService } from "./services/zepMemory";
 import { UserLanguageManager } from "./services/userLanguageManager";
 import { getAiFeedbackFromSupabase } from "./services/getAiFeedbackFromOpenAI";
-import { setupBotCommands, getBotCommands } from './config/commands';
+import { setupBotCommands, getBotCommands } from "./config/commands";
 import {
   PRODUCTS,
   CATEGORIES,
@@ -90,7 +95,7 @@ initI18n()
       const welcomeMessage = t(lang, "welcome", { user: userName });
 
       const languageButton = UserLanguageManager.getLanguageButton(lang);
-      
+
       const keyboard = Markup.inlineKeyboard([
         [Markup.button.callback(t(lang, "menu.catalog"), "catalog")],
         [Markup.button.callback(t(lang, "menu.consult"), "consult")],
@@ -156,12 +161,12 @@ initI18n()
       const lang = ctx.session?.language || "lt";
       await ctx.reply(t(lang, "messages.consult"), { parse_mode: "Markdown" });
     });
-    
+
     // Команда /language
     bot.command("language", async (ctx) => {
       const lang = ctx.session?.language || "lt";
       const selectLanguageMessage = t(lang, "messages.select_language");
-      
+
       const languageKeyboard = Markup.inlineKeyboard([
         [
           Markup.button.callback("🇱🇹 Lietuvių", "set_language_lt"),
@@ -169,7 +174,7 @@ initI18n()
           Markup.button.callback("🇬🇧 English", "set_language_en"),
         ],
       ]);
-      
+
       await ctx.reply(selectLanguageMessage, {
         parse_mode: "Markdown",
         ...languageKeyboard,
@@ -231,7 +236,7 @@ initI18n()
           case "language_menu":
             // Показываем меню выбора языка
             const selectLanguageMessage = t(lang, "messages.select_language");
-            
+
             const languageKeyboard = Markup.inlineKeyboard([
               [
                 Markup.button.callback("🇱🇹 Lietuvių", "set_language_lt"),
@@ -240,46 +245,56 @@ initI18n()
               ],
               [Markup.button.callback(t(lang, "back_to_menu"), "back_to_menu")],
             ]);
-            
+
             await ctx.editMessageText(selectLanguageMessage, {
               parse_mode: "Markdown",
               ...languageKeyboard,
             });
             break;
-            
+
           case "set_language_lt":
           case "set_language_ru":
           case "set_language_en":
             // Устанавливаем новый язык
-            const newLang = callbackData.replace("set_language_", "") as SupportedLanguage;
+            const newLang = callbackData.replace(
+              "set_language_",
+              ""
+            ) as SupportedLanguage;
             if (ctx.from?.id) {
               UserLanguageManager.setUserLanguage(ctx.from.id, newLang);
             }
-            
+
             // Обновляем сессию
             if (ctx.session) {
               ctx.session.language = newLang;
             }
-            
+
             // Показываем сообщение об изменении языка
             await ctx.answerCbQuery(t(newLang, "messages.language_changed"));
-            
+
             // Возвращаемся в главное меню с обновленным языком
-            const userName = ctx.from?.first_name || t(newLang, "messages.colleague_fallback");
+            const userName =
+              ctx.from?.first_name || t(newLang, "messages.colleague_fallback");
             const welcomeMessage = t(newLang, "welcome", { user: userName });
-            const newLanguageButton = UserLanguageManager.getLanguageButton(newLang);
-            
+            const newLanguageButton =
+              UserLanguageManager.getLanguageButton(newLang);
+
             const mainKeyboard = Markup.inlineKeyboard([
               [Markup.button.callback(t(newLang, "menu.catalog"), "catalog")],
               [Markup.button.callback(t(newLang, "menu.consult"), "consult")],
-              [Markup.button.callback(t(newLang, "menu.compare"), "compare_start")],
+              [
+                Markup.button.callback(
+                  t(newLang, "menu.compare"),
+                  "compare_start"
+                ),
+              ],
               [
                 Markup.button.callback(t(newLang, "menu.filters"), "filters"),
                 Markup.button.callback(t(newLang, "menu.faq"), "faq"),
               ],
               [Markup.button.callback(newLanguageButton, "language_menu")],
             ]);
-            
+
             await ctx.editMessageText(welcomeMessage, {
               parse_mode: "Markdown",
               ...mainKeyboard,
@@ -445,13 +460,21 @@ initI18n()
             // Возвращаемся к главному меню
             const backUserName =
               ctx.from?.first_name || t(lang, "messages.colleague_fallback");
-            const backWelcomeMessage = t(lang, "welcome", { user: backUserName });
-            const backLanguageButton = UserLanguageManager.getLanguageButton(lang);
+            const backWelcomeMessage = t(lang, "welcome", {
+              user: backUserName,
+            });
+            const backLanguageButton =
+              UserLanguageManager.getLanguageButton(lang);
 
             const backToMainKeyboard = Markup.inlineKeyboard([
               [Markup.button.callback(t(lang, "menu.catalog"), "catalog")],
               [Markup.button.callback(t(lang, "menu.consult"), "consult")],
-              [Markup.button.callback(t(lang, "menu.compare"), "compare_start")],
+              [
+                Markup.button.callback(
+                  t(lang, "menu.compare"),
+                  "compare_start"
+                ),
+              ],
               [
                 Markup.button.callback(t(lang, "menu.filters"), "filters"),
                 Markup.button.callback(t(lang, "menu.faq"), "faq"),
@@ -660,7 +683,7 @@ initI18n()
 
               if (product && product.pdfLink) {
                 // Отправляем прямую ссылку на PDF из GitHub
-                const pdfMessage = t(lang, "messages.pdf_intro", {
+                const pdfMessage = t(lang, "pdf_intro", {
                   name: product.name,
                   link: product.pdfLink,
                 });
@@ -772,54 +795,54 @@ initI18n()
           `[Assistant] Processing message from ${userName}: ${userMessage} (Language: ${userLanguage})`
         );
 
+        // 🔍 Добавляем детальные логи для диагностики
+        console.log("🔍 [Debug] Assistant ID:", ASSISTANT_ID);
+        console.log("🔍 [Debug] User message:", userMessage);
+        console.log("🔍 [Debug] User language:", userLanguage);
+        console.log("🔍 [Debug] User name:", userName);
+
         // Отправляем сообщение о прогрессе
         progressMessage = await ctx.reply(t(lang, "messages.processing"), {
           reply_parameters: { message_id: ctx.message.message_id },
         });
 
-        // Получаем ответ от OpenAI Assistant
         // Получаем экземпляр сервиса памяти
         const zepMemory = await ZepMemoryService.getInstance();
 
-        // Получаем последние сообщения из истории
-        const recentMessages = await zepMemory.getRecentMessages(ctx.from.id);
-
-        // Ищем похожие сообщения
-        const similarMessages = await zepMemory.searchSimilarMessages(ctx.from.id, userMessage);
-
-        // Формируем контекст из истории и похожих сообщений
-        const contextMessages = [
-          ...recentMessages,
-          ...(similarMessages.length > 0 ? 
-            [{ role: 'system', content: 'Похожие предыдущие вопросы:' }, ...similarMessages] 
-            : [])
-        ];
-
-        // Получаем ответ от AI с учетом контекста
-        const { ai_response } = await getAiFeedbackFromSupabase({
+        // 🔧 ИСПРАВЛЯЕМ: Правильный вызов функции с объектом параметров
+        console.log(
+          "🔍 [Debug] Calling getAiFeedbackFromSupabase with correct parameters..."
+        );
+        const { ai_response: aiResponse } = await getAiFeedbackFromSupabase({
           assistant_id: ASSISTANT_ID!,
           report: userMessage,
           language_code: userLanguage,
           full_name: userName,
-          context: contextMessages,
         });
+
+        console.log(
+          "🔍 [Debug] AI Response received:",
+          aiResponse ? "✅" : "❌"
+        );
 
         // Сохраняем сообщение пользователя и ответ в памяти
         await zepMemory.addMessage(ctx.from.id, {
-          role: 'user',
+          role: "user",
           content: userMessage,
           metadata: {
             language: userLanguage,
-            userName: userName
-          }
+            userName: userName,
+          },
         });
 
         await zepMemory.addMessage(ctx.from.id, {
-          role: 'assistant',
-          content: ai_response,
+          role: "assistant",
+          content: aiResponse,
           metadata: {
-            language: userLanguage
-          }
+            language: userLanguage,
+            // 🔧 ИСПРАВЛЯЕМ: убираем threadId, так как функция его не возвращает
+            timestamp: new Date().toISOString(),
+          },
         });
 
         // Удаляем сообщение о прогрессе
@@ -831,9 +854,9 @@ initI18n()
           }
         }
 
-        if (ai_response && ai_response.trim()) {
+        if (aiResponse && aiResponse.trim()) {
           // Отправляем ответ пользователю
-          await ctx.reply(ai_response, {
+          await ctx.reply(aiResponse, {
             parse_mode: "Markdown",
           });
 
@@ -905,7 +928,6 @@ initI18n()
       });
     });
 
-
     // Создание HTTP сервера для healthcheck (требуется Railway)
     const app = express();
     const PORT = process.env.PORT || 3000;
@@ -972,15 +994,15 @@ initI18n()
         );
 
         // Инициализируем команды бота на всех языках
-        const languages: SupportedLanguage[] = ['lt', 'ru', 'en'];
-        
+        const languages: SupportedLanguage[] = ["lt", "ru", "en"];
+
         // Устанавливаем команды для каждого языка
         for (const lang of languages) {
           await setupBotCommands(bot, lang);
         }
-        
+
         // Устанавливаем команды по умолчанию (без языкового параметра) на английском
-        await bot.telegram.setMyCommands(getBotCommands('en'));
+        await bot.telegram.setMyCommands(getBotCommands("en"));
       })
       .catch((error) => {
         console.error("❌ Failed to start bot:", error);
