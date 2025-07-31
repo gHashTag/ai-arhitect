@@ -8,9 +8,16 @@ import { enhancedAssistantService } from "./services/enhancedAssistantService";
 import { faqService } from "./services/updatedFAQService";
 import { loadExpandedFAQs } from "./services/expandedFAQData";
 
-// Проверяем переменные окружения
-if (!process.env.BOT_TOKEN) {
-  console.error("❌ BOT_TOKEN не найден в переменных окружения");
+// Проверяем переменные окружения (поддерживаем оба варианта названий)
+const botToken = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
+if (!botToken) {
+  console.error(
+    "❌ BOT_TOKEN или TELEGRAM_BOT_TOKEN не найден в переменных окружения"
+  );
+  console.error(
+    "📋 Доступные переменные:",
+    Object.keys(process.env).filter((key) => key.includes("TOKEN"))
+  );
   // НЕ выходим из процесса - HTTP сервер должен работать для healthcheck
 }
 
@@ -22,7 +29,7 @@ if (!process.env.OPENAI_API_KEY) {
 // Загружаем расширенные FAQ при старте бота
 loadExpandedFAQs(faqService);
 
-const bot = new Telegraf(process.env.BOT_TOKEN!);
+const bot = new Telegraf(botToken || "dummy_token");
 
 // Middleware для логирования
 bot.use((ctx, next) => {
@@ -534,6 +541,17 @@ app.get("/health", (req, res) => {
     service: "AI Architect Bot",
     http_server: "running",
     telegram_bot: botStatus,
+    environment: {
+      port: PORT,
+      node_env: process.env.NODE_ENV,
+      has_bot_token: !!botToken,
+      has_openai_key: !!process.env.OPENAI_API_KEY,
+      token_source: process.env.BOT_TOKEN
+        ? "BOT_TOKEN"
+        : process.env.TELEGRAM_BOT_TOKEN
+          ? "TELEGRAM_BOT_TOKEN"
+          : "none",
+    },
     data: {
       faqs: faqService.getAllFAQs().length,
       categories: faqService.getAllCategories().length,
