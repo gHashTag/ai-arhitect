@@ -28,7 +28,8 @@ const bot = new Telegraf(process.env.BOT_TOKEN!);
 bot.use((ctx, next) => {
   const user = ctx.from;
   const chatType = ctx.chat?.type;
-  const messageText = ctx.message && "text" in ctx.message ? ctx.message.text : "non-text";
+  const messageText =
+    ctx.message && "text" in ctx.message ? ctx.message.text : "non-text";
 
   console.log(
     `📨 ${user?.first_name} (${user?.id}) в ${chatType}: ${messageText}`
@@ -121,9 +122,10 @@ async function handleFAQMenu(ctx: any) {
   }
 }
 
-// Обработчик категорий FAQ
-bot.action(/faq_cat_(.+)/, async (ctx) => {
+// Обработчик категорий FAQ с пагинацией
+bot.action(/faq_cat_(.+?)(?:_page_(\d+))?$/, async (ctx) => {
   const categoryId = ctx.match[1];
+  const page = parseInt(ctx.match[2] || "1");
   const userId = ctx.from.id.toString();
   const lang = userLanguageManager.getUserLanguage(userId);
 
@@ -140,31 +142,80 @@ bot.action(/faq_cat_(.+)/, async (ctx) => {
     return;
   }
 
-  const keyboard = Markup.inlineKeyboard([
-    ...faqs
-      .slice(0, 10)
-      .map((faq) => [
-        Markup.button.callback(
-          faq.question.length > 40
-            ? faq.question.substring(0, 40) + "..."
-            : faq.question,
-          `faq_show_${faq.id}`
-        ),
-      ]),
-    [
+  const faqsPerPage = 8;
+  const totalPages = Math.ceil(faqs.length / faqsPerPage);
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+  const startIndex = (currentPage - 1) * faqsPerPage;
+  const endIndex = startIndex + faqsPerPage;
+  const currentFaqs = faqs.slice(startIndex, endIndex);
+
+  const buttons = [];
+
+  // FAQ кнопки
+  currentFaqs.forEach((faq) => {
+    buttons.push([
       Markup.button.callback(
-        lang === "lt" ? "« Į kategorijas" : "« К категориям",
-        "faq_menu"
+        faq.question.length > 40
+          ? faq.question.substring(0, 40) + "..."
+          : faq.question,
+        `faq_show_${faq.id}`
       ),
-    ],
+    ]);
+  });
+
+  // Навигация по страницам
+  if (totalPages > 1) {
+    const navButtons = [];
+
+    if (currentPage > 1) {
+      navButtons.push(
+        Markup.button.callback(
+          "⬅️",
+          `faq_cat_${categoryId}_page_${currentPage - 1}`
+        )
+      );
+    }
+
+    navButtons.push(
+      Markup.button.callback(
+        `${currentPage}/${totalPages}`,
+        `current_page_${categoryId}`
+      )
+    );
+
+    if (currentPage < totalPages) {
+      navButtons.push(
+        Markup.button.callback(
+          "➡️",
+          `faq_cat_${categoryId}_page_${currentPage + 1}`
+        )
+      );
+    }
+
+    buttons.push(navButtons);
+  }
+
+  // Кнопка назад
+  buttons.push([
+    Markup.button.callback(
+      lang === "lt" ? "« Į kategorijas" : "« К категориям",
+      "faq_menu"
+    ),
   ]);
+
+  const keyboard = Markup.inlineKeyboard(buttons);
 
   const message =
     lang === "lt"
-      ? `📂 **${category.name}**\n${category.description}\n\n📋 Klausimų kategorijoje: ${faqs.length}`
-      : `📂 **${category.name}**\n${category.description}\n\n📋 Вопросов в категории: ${faqs.length}`;
+      ? `📂 **${category.name}**\n${category.description}\n\n📋 Klausimų kategorijoje: ${faqs.length}\n📄 Puslapis: ${currentPage}/${totalPages}`
+      : `📂 **${category.name}**\n${category.description}\n\n📋 Вопросов в категории: ${faqs.length}\n📄 Страница: ${currentPage}/${totalPages}`;
 
   await ctx.editMessageText(message, { parse_mode: "Markdown", ...keyboard });
+});
+
+// Обработчик клика по индикатору страницы (просто отвечаем без действия)
+bot.action(/current_page_(.+)/, async (ctx) => {
+  await ctx.answerCbQuery("📄 Текущая страница");
 });
 
 // Показ конкретного FAQ
