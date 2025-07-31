@@ -472,14 +472,23 @@ process.once("SIGTERM", () => {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Глобальная переменная для отслеживания статуса бота
+let botStatus = "starting";
+
 // Health check endpoint для Railway
 app.get("/health", (req, res) => {
-  res.json({
-    status: "OK",
+  res.status(200).json({
+    status: "OK", // Всегда OK для Railway healthcheck
     timestamp: new Date().toISOString(),
-    bot: "AI Architect Bot",
-    faqs: faqService.getAllFAQs().length,
-    categories: faqService.getAllCategories().length,
+    service: "AI Architect Bot",
+    http_server: "running",
+    telegram_bot: botStatus,
+    data: {
+      faqs: faqService.getAllFAQs().length,
+      categories: faqService.getAllCategories().length,
+      russian_faqs: faqService.getFAQsByLanguage("ru").length,
+      lithuanian_faqs: faqService.getFAQsByLanguage("lt").length,
+    },
   });
 });
 
@@ -501,7 +510,7 @@ app.listen(PORT, () => {
   console.log(`🌐 HTTP сервер запущен на порту ${PORT}`);
 });
 
-// Запуск бота
+// Запуск бота (независимо от HTTP сервера)
 console.log("🚀 Запуск Telegram бота AI-Архитектор...");
 console.log(`📊 Загружено FAQ: ${faqService.getAllFAQs().length}`);
 console.log(`📂 Категорий FAQ: ${faqService.getAllCategories().length}`);
@@ -509,6 +518,7 @@ console.log(`📂 Категорий FAQ: ${faqService.getAllCategories().length
 bot
   .launch()
   .then(() => {
+    botStatus = "running";
     console.log("✅ Бот успешно запущен!");
     console.log(`🇷🇺 Русских FAQ: ${faqService.getFAQsByLanguage("ru").length}`);
     console.log(
@@ -516,8 +526,10 @@ bot
     );
   })
   .catch((error) => {
+    botStatus = "error";
     console.error("❌ Ошибка запуска бота:", error);
-    process.exit(1);
+    console.error("⚠️ HTTP сервер продолжает работать для healthcheck");
+    // НЕ выходим из процесса - HTTP сервер должен продолжать работать
   });
 
 // Graceful stop
