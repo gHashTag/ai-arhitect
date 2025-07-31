@@ -28,7 +28,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN!);
 bot.use((ctx, next) => {
   const user = ctx.from;
   const chatType = ctx.chat?.type;
-  const messageText = "text" in ctx.message! ? ctx.message.text : "non-text";
+  const messageText = ctx.message && "text" in ctx.message ? ctx.message.text : "non-text";
 
   console.log(
     `📨 ${user?.first_name} (${user?.id}) в ${chatType}: ${messageText}`
