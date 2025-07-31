@@ -9,20 +9,20 @@ import { faqService } from "./services/updatedFAQService";
 import { loadExpandedFAQs } from "./services/expandedFAQData";
 
 // Проверяем переменные окружения
-if (!process.env.TELEGRAM_BOT_TOKEN) {
-  console.error("❌ TELEGRAM_BOT_TOKEN не найден в переменных окружения");
-  process.exit(1);
+if (!process.env.BOT_TOKEN) {
+  console.error("❌ BOT_TOKEN не найден в переменных окружения");
+  // НЕ выходим из процесса - HTTP сервер должен работать для healthcheck
 }
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("❌ OPENAI_API_KEY не найден в переменных окружения");
-  process.exit(1);
+  // НЕ выходим из процесса - HTTP сервер должен работать для healthcheck
 }
 
 // Загружаем расширенные FAQ при старте бота
 loadExpandedFAQs(faqService);
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN!);
 
 // Middleware для логирования
 bot.use((ctx, next) => {
